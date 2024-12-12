@@ -1,18 +1,27 @@
 import pygame
 from settings import *
 class Player():
-    def __init__(self, x_loc, y_loc, width, height, color, display, image):
-        self.image = pygame.transform.scale(image, (width, height))
+    def __init__(self, x_loc, y_loc, display, rt_list, lft_list):
+
+        self.left_list = lft_list
+        self.right_list = rt_list
+        self.run_right = False
+        self.run_left = False
+
+        self.current_frame = 0
+        self.delay = 20
+        self.last = pygame.time.get_ticks()
+
+
+        self.image = self.right_list[0]
         self.rect = self.image.get_rect()
         self.rect.x = x_loc
         self.rect.y = y_loc
 
-
         self.x_loc = x_loc
         self.y_loc = y_loc
-        self.width = width
-        self.height = height
-        self.color = color
+
+
         self.display = display
         self.velo = 5
         self.x_velo = 0
@@ -23,9 +32,6 @@ class Player():
         self.landed = True
 
 
-
-
-       
 
 
     def draw(self):
@@ -48,9 +54,37 @@ class Player():
 
         # set x_velo based on key presses
         if keys[pygame.K_a]:
+            self.now = pygame.time.get_ticks()
             x_change = -1 * self.velo
+        
+            self.run_left = False
+
+            if self.now - self.last > self.delay:
+                self.last = self.now
+                self.current_frame = (self.current_frame + 1) % len(self.left_list)
+                self.image = self.left_list[self.current_frame]
+
         elif keys[pygame.K_d]:
             x_change = self.velo
+            self.now = pygame.time.get_ticks()
+
+            self.run_right = True
+
+            if self.now - self.last > self.delay:
+                self.last = self.now
+                self.current_frame = (self.current_frame + 1) % len(self.right_list)
+                self.image = self.right_list[self.current_frame]
+
+        else:
+            x_change = 0
+
+            if self.run_left:
+                self.image = self.left_list[0]
+                self.run_left = False
+            elif self.run_right:
+                self.image = self.right_list[0]
+                self.run_right = False
+
        
         # jump on space key press
         if keys[pygame.K_SPACE] and not self.jumping and self.landed:
