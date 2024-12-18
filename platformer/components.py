@@ -38,15 +38,11 @@ class Player():
         self.display.blit(self.image, self.rect)
 
 
-
-
-   
-    def update(self, surface_list, mob_list, ground_list, spike_list, door_list):
+    def update(self, surface_list, mob_list, ground_list, spike_list, door_list, checkpoint_list):
         x_change = 0
         y_change = 0
-        spawn_y = 0
-        spawn_x = 0
-
+        spawn_y = self.y_loc - 100
+        spawn_x = self.x_loc
 
         # list of key presses
         keys = pygame.key.get_pressed()
@@ -90,7 +86,7 @@ class Player():
         if keys[pygame.K_SPACE] and not self.jumping and self.landed:
             self.jumping = True
             self.landed = False
-            self.y_velo = -15
+            self.y_velo = -16
         if not keys[pygame.K_SPACE]:
             self.jumping = False
            
@@ -139,11 +135,9 @@ class Player():
 
             # falling off map
             if self.rect.top >= DISPLAY_HEIGHT + 20:
-                spawn_y = self.y_loc - 100
+                
                 self.rect.y = spawn_y
 
-
-                spawn_x = self.x_loc
                 self.rect.x = spawn_x
 
 
@@ -169,56 +163,47 @@ class Player():
 
 
         # hitting enemy
-
+        
 
         for mob in mob_list:
             if mob.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
                
-                spawn_y = self.y_loc - 100
                 self.rect.y = spawn_y
-
-
-                spawn_x = self.x_loc
+                
                 self.rect.x = spawn_x
-
 
                 y_change = 3
 
 
         for spike in spike_list:
             if spike.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
-               
-                spawn_y = self.y_loc - 100
+
                 self.rect.y = spawn_y
 
-
-                spawn_x = self.x_loc
                 self.rect.x = spawn_x
 
-
                 y_change = 3
+
+        # Checkpoint collision
+        for checkpoint in checkpoint_list:
+            if checkpoint.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
+
+                self.x_loc = checkpoint.rect.x
+                self.y_loc = checkpoint.rect.y
+
+
        
         # Door collision for level change
         for door in door_list:
             if door.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
                 return True  
 
-
-        # Update player locations
-        self.rect.x += x_change
-        self.rect.y += y_change
-
-
-        return False  # No level transition
-           
-
-
         # update player locations
         self.rect.x += x_change
         self.rect.y += y_change
 
-
-
+        return False  # No level transition
+           
 
 class Brick():
     def __init__(self, x, y, width, height, color, display, image):
@@ -326,15 +311,8 @@ class Enemy():
         self.on_platform = True
         self.off_platform = False
 
-
-
-
-
-
     def draw_enemy(self):
         self.display.blit(self.image, self.rect)
-
-
 
 
     def enemy_update(self, surface_list,invis_list):
@@ -360,3 +338,27 @@ class Enemy():
 
 
         self.rect.x += self.x_change
+
+class Checkpoint():
+    def __init__(self, x, y, width, height, color, display, image_off, image_on):
+        self.image_off = image_off
+        self.image_on = image_on
+        self.active_image = pygame.transform.scale(image_on, (width, height))
+        self.rect = self.image.get_rect()
+
+
+        self.rect.x = x
+        self.rect.y = y
+
+
+        self.display = display
+       
+       
+    # def draw_checkpoint(self):
+    #     self.display.blit(self.image, self.rect)
+
+    def checkpoint_update(self, player):
+        if player.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
+            pass
+            
+        self.display.blit(self.active_image, self.rect)

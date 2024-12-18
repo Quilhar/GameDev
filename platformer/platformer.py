@@ -20,8 +20,8 @@ def loading_level(level_count):
     front_img = pygame.image.load('platformer/images/front.png')
     slime_img = pygame.image.load('platformer/images/slime_normal.png')
     ground_img = pygame.image.load('platformer/images/ground.png')
-    switch_on_img = pygame.image.load('platformer/images/switch_green_on.png')
-    switch_off_img = pygame.image.load('platformer/images/switch_red_on.png')
+    checkpoint_on_img = pygame.image.load('platformer/images/switch_green_on.png')
+    checkpoint_off_img = pygame.image.load('platformer/images/switch_red_on.png')
     door_img = pygame.image.load('platformer/images/lock_red.png')
     spike_img = pygame.image.load('platformer/images/spikes.png')
 
@@ -50,6 +50,7 @@ def loading_level(level_count):
     ground_list = []
     spike_list = []
     door_list = []
+    checkpoint_list = []
 
 
 
@@ -108,7 +109,12 @@ def loading_level(level_count):
 
                 spike_list.append(spike)
 
-    return player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list
+            elif current_level[row][col] == "c":
+                checkpoint = comps.Checkpoint(x_loc + 5, y_loc + (BRICK_HEIGHT/2), BRICK_WIDTH - 10, BRICK_HEIGHT/2, BRICK, screen, checkpoint_off_img, checkpoint_on_img)
+
+                checkpoint_list.append(checkpoint)
+
+    return player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list, checkpoint_list
     #######################################################################
 
 
@@ -121,7 +127,7 @@ level_count = 0  # Start at the first level
 playing = True
 
 
-player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list = loading_level(level_count)
+player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list, checkpoint_list = loading_level(level_count)
 
 
 while playing:
@@ -153,12 +159,16 @@ while playing:
     for door in door_list:
         door.draw_door()
 
+    for checkpoint in checkpoint_list:
+        # checkpoint.draw_checkpoint()d
+        checkpoint.checkpoint_update(player)
+
 
     if player:
-        level_transition = player.update(brick_list, enemy_list, ground_list, spike_list, door_list)
+        level_transition = player.update(brick_list, enemy_list, ground_list, spike_list, door_list, checkpoint_list)
         player.draw()
+        
       
-
 
     # Handle level transition
     if level_transition:
