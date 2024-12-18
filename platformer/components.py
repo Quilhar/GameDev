@@ -343,13 +343,15 @@ class Checkpoint():
     def __init__(self, x, y, width, height, color, display, image_off, image_on):
         self.image_off = image_off
         self.image_on = image_on
-        self.active_image = pygame.transform.scale(image_on, (width, height))
-        self.rect = self.image.get_rect()
+        self.off_image = pygame.transform.scale(self.image_off, (width, height))
+        self.on_image = pygame.transform.scale(self.image_on, (width, height))
+        self.rect = self.off_image.get_rect()
 
 
         self.rect.x = x
         self.rect.y = y
 
+        self
 
         self.display = display
        
@@ -359,6 +361,8 @@ class Checkpoint():
 
     def checkpoint_update(self, player):
         if player.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
-            pass
             
-        self.display.blit(self.active_image, self.rect)
+            self.display.blit(self.image_on, self.rect)
+
+        else:
+            self.display.blit(self.image_off, self.rect)
