@@ -37,7 +37,7 @@ LAYOUTS = [["1                                1",
             "1                                1",
             "1                                1",
             "1                                1",
-            "1  p   ss  b     e      b        d",
+            "1  p   ss  b     e      b  ss    d",
             "1gggggggggggggggggggggggggggggggg1"],
 
            ["1111111111111111111111111111111111",
