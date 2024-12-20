@@ -160,8 +160,8 @@ while playing:
         door.draw_door()
 
     for checkpoint in checkpoint_list:
-        # checkpoint.draw_checkpoint()d
-        checkpoint.checkpoint_update(player)
+        checkpoint.draw()
+        checkpoint.update(player)
 
 
     if player:
@@ -173,7 +173,7 @@ while playing:
     # Handle level transition
     if level_transition:
         level_count = (level_count + 1) % len(LAYOUTS)
-        player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list = loading_level(level_count)
+        player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list, checkpoint_list = loading_level(level_count)
 
 
     # Update display

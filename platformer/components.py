@@ -351,18 +351,23 @@ class Checkpoint():
         self.rect.x = x
         self.rect.y = y
 
-        self
 
         self.display = display
        
-       
-    # def draw_checkpoint(self):
-    #     self.display.blit(self.image, self.rect)
+        self.active = False
 
-    def checkpoint_update(self, player):
-        if player.rect.colliderect(self.rect.x, self.rect.y, self.rect.width, self.rect.height):
-            
-            self.display.blit(self.image_on, self.rect)
+    def update(self, player):
 
+        # Check for collision with the player
+        if self.rect.colliderect(player.rect):
+            self.active = True
         else:
-            self.display.blit(self.image_off, self.rect)
+            self.active = False
+
+    def draw(self):
+        # Draw the active or inactive image on 
+        if self.active:
+            self.display.blit(self.on_image, self.rect)
+        else:
+            self.display.blit(self.off_image, self.rect)
+
