@@ -25,7 +25,7 @@ def loading_level(level_count):
     door_img = pygame.image.load('platformer/images/lock_red.png')
     spike_img = pygame.image.load('platformer/images/spikes.png')
 
-
+ 
     right_list = []
     left_list = []
     
@@ -174,6 +174,13 @@ while playing:
     if level_transition:
         level_count = (level_count + 1) % len(LAYOUTS)
         player, brick_list, enemy_list, barrier_list, ground_list, spike_list, door_list, checkpoint_list = loading_level(level_count)
+
+
+    # Control text
+    font = pygame.font.SysFont('Calibri', 50, True, False)
+    start_txt = 'Use "A" and "D" to move left and right and Spacebar to jump'
+    title_img = font.render(start_txt, True, WHITE)
+    screen.blit(title_img, [425,450])
 
 
     # Update display
