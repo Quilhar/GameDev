@@ -194,17 +194,33 @@ class Player(pygame.sprite.Sprite):
 
         self.collide_with_token()
 
-    # def shoot(self):
-    #     self.get_keys()
+    def shoot(self):
+        self.get_keys()
 
-    #     bullet = Bullet(self.display, self.rect.centerx - 30, self.rect.centery - 10, [self.game.bullet_image])
-    #     self.game.bullet_sprite.add(bullet)
-    #     self.game.all_sprites.add(bullet)
+        self.bulletx = self.rect.centerx - 30
+        self.bullety = self.rect.centery - 10
 
-    #     bullet_collide = pygame.sprite.spritecollide(bullet, self.game.wall_sprite, True)
+        bullet = Bullet(self.display, self.bulletx, self.bullety, self.game.bullet_image_list)
+        self.game.bullet_sprite.add(bullet)
+        self.game.all_sprites.add(bullet)
 
+        if self.bullety < 0:
+            self.game.bullet_sprite.remove(bullet)
+            self.game.all_sprites.remove(bullet)
 
+        if self.bullety > 768:
+            self.game.bullet_sprite.remove(bullet)
+            self.game.all_sprites.remove(bullet)
 
+        if self.bulletx < 0:
+            self.game.bullet_sprite.remove(bullet)
+            self.game.all_sprites.remove(bullet)
+
+        if self.bulletx > 1568:
+            self.game.bullet_sprite.remove(bullet)
+            self.game.all_sprites.remove(bullet)
+
+        
 
 class Camera:
     def __init__(self, width, height):

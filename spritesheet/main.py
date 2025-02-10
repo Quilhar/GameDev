@@ -45,7 +45,6 @@ class Game:
         self.bullet_image = pygame.image.load('spritesheet/bullet_sprite.png')
         self.bullet_image = pygame.transform.scale(self.bullet_image, (35, 35))
         self.bullet_image_list = [self.bullet_image, pygame.transform.rotate(self.bullet_image, 90), pygame.transform.rotate(self.bullet_image, 180), pygame.transform.rotate(self.bullet_image, 270)]
-        self.bullet_pos_list = []
         #Explosion
         explosion_sheet = SpriteSheet('spritesheet/explosion.png')
         self.explosion_list = []
@@ -174,7 +173,7 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
 
-                    # self.player.shoot()
+                    self.player.shoot()
             
     def run(self):
         '''contains main game loop'''
