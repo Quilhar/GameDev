@@ -88,6 +88,7 @@ class Game:
         self.token_sprite = pygame.sprite.Group()
         self.bullet_sprite = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
+        self.map = pytmx.load_pygame("/Users/244213/Desktop/GameDev/tiles/level1.tmx")
 
         #player sprites
         self.player = Player(self.screen, 175, 75, self.player_image_list, self)
@@ -146,20 +147,20 @@ class Game:
     def draw(self):
         '''Fill the screen, draw the objets and flip'''
 
-        self.screen.fill(WHITE)
+        # self.screen.fill(WHITE)
 
-        # camera requires blitting rather than calling all_sprites draw method
-        for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.pov.get_view(sprite))
+        # # camera requires blitting rather than calling all_sprites draw method
+        # for sprite in self.all_sprites:
+        #     self.screen.blit(sprite.image, self.pov.get_view(sprite))
 
 
 
-        font = pygame.font.SysFont('Calibri', 35, True, False)
-        score_txt = f'Score: {self.score}'
-        score_img = font.render(score_txt, True, WHITE)
-        self.screen.blit(score_img, [260, 60])
+        # font = pygame.font.SysFont('Calibri', 35, True, False)
+        # score_txt = f'Score: {self.score}'
+        # score_img = font.render(score_txt, True, WHITE)
+        # self.screen.blit(score_img, [260, 60])
 
-        pygame.display.flip()
+        # pygame.display.flip()
 
     def events(self):
         '''game loop events'''
