@@ -2,6 +2,7 @@ from settings import *
 from sprites import *
 import pygame
 import random
+import pytmx
 
 class Game:
     def __init__(self):
