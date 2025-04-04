@@ -22,75 +22,126 @@ class SpriteSheet():
 
         return image
 
-class Wall(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, img):
+# class Wall(pygame.sprite.Sprite):
+#     def __init__(self, screen, x, y, img):
+
+#         pygame.sprite.Sprite.__init__(self)
+
+#         self.image = img
+#         self.rect = self.image.get_rect()
+#         self.rect.x = x
+#         self.rect.y = y
+
+#         self.display = screen
+
+# class Token(pygame.sprite.Sprite):
+#     def __init__(self, screen, x, y, img):
+
+#         pygame.sprite.Sprite.__init__(self)
+
+#         self.image = img
+#         self.rect = self.image.get_rect()
+#         self.rect.x = x
+#         self.rect.y = y
+
+#         self.display = screen
+
+# class Bullet(pygame.sprite.Sprite):
+#     def __init__(self, screen, x, y, image_list):
+
+#         pygame.sprite.Sprite.__init__(self)
+
+#         self.image_list = image_list
+#         self.image = self.image_list[0]
+#         self.rect = self.image.get_rect()
+#         self.rect.x = x
+#         self.rect.y = y
+
+#         self.display = screen
+
+#     def update(self):
+#         self.rect.x -= 10
+
+#     def get_keys(self):
+
+#         keys = pygame.key.get_pressed()
+
+#         if keys[pygame.K_a]:
+#             self.image = self.image_list[2]
+#         if keys[pygame.K_d]:
+#             self.image = self.image_list[0]
+#         if keys[pygame.K_w]:
+#             self.image = self.image_list[1]
+#         if keys[pygame.K_s]:
+#             self.image = self.image_list[3]
+
+# class Background(pygame.sprite.Sprite):
+#     def __init__(self, screen, x, y, img):
+
+#         pygame.sprite.Sprite.__init__(self)
+
+#         self.image = img
+#         self.rect = self.image.get_rect()
+#         self.rect.x = x
+#         self.rect.y = y
+        
+#         self.x = x
+#         self.y = y
+#         self.vy = 0
+#         self.vx = 0
+
+#         self.display = screen
+class Colliders(pygame.sprite.Sprite):
+    def __init__(self, screen, x, y, width, height):
 
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-        self.display = screen
-
-class Token(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, img):
-
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-        self.display = screen
-
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, image_list):
-
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image_list = image_list
-        self.image = self.image_list[0]
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-        self.display = screen
-
-    def update(self):
-        self.rect.x -= 10
-
-    def get_keys(self):
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_a]:
-            self.image = self.image_list[2]
-        if keys[pygame.K_d]:
-            self.image = self.image_list[0]
-        if keys[pygame.K_w]:
-            self.image = self.image_list[1]
-        if keys[pygame.K_s]:
-            self.image = self.image_list[3]
-
-class Background(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, img):
-
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = img
+        self.image = pygame.Surface((width, height))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         
+
+        self.display = screen
+
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, screen, x, y, image, game):
+
+        pygame.sprite.Sprite.__init__(self)
+
+        self.game = game
+        self.image = image
+        self.player_speed = 3
+        self.display = screen
+
         self.x = x
         self.y = y
         self.vy = 0
         self.vx = 0
+        
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    
+class Key(pygame.sprite.Sprite):
+    def __init__(self, screen, x, y, image, game):
 
+        pygame.sprite.Sprite.__init__(self)
+
+        self.game = game
+        self.image = image
+        self.player_speed = 3
         self.display = screen
+
+        self.x = x
+        self.y = y
+        self.vy = 0
+        self.vx = 0
+        
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
 
 class Player(pygame.sprite.Sprite):
 
@@ -100,7 +151,7 @@ class Player(pygame.sprite.Sprite):
 
         self.game = game
         self.image_list = image_list
-        self.player_speed = 5
+        self.player_speed = 4
         self.display = screen
 
         self.x = x
@@ -108,6 +159,8 @@ class Player(pygame.sprite.Sprite):
         self.vy = 0
         self.vx = 0
         self.image = self.image_list[0]
+        
+        
 
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -123,7 +176,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_a]:
             self.vx = -self.player_speed
             self.vy = 0
-            self.image = self.image_list[2]
+            self.image = self.image_list[0]
         if keys[pygame.K_d]:
             self.vx = self.player_speed
             self.vy = 0
@@ -131,18 +184,17 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_w]:
             self.vy = -self.player_speed
             self.vx = 0
-            self.image = self.image_list[1]
+            self.image = self.image_list[0]
         if keys[pygame.K_s]:
             self.vy = self.player_speed
             self.vx = 0
-            self.image = self.image_list[3]
+            self.image = self.image_list[0]
 
 
-    def collide_with_wall(self, dir):
-
+    def collide_with_buildings(self, dir):
         if dir == 'x':
 
-            hits = pygame.sprite.spritecollide(self, self.game.wall_sprite, False)
+            hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
 
             if hits:
                 if self.vx > 0:
@@ -155,7 +207,7 @@ class Player(pygame.sprite.Sprite):
 
         if dir == 'y':
 
-            hits = pygame.sprite.spritecollide(self, self.game.wall_sprite, False)
+            hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
 
             if hits:
                 if self.vy > 0:
@@ -166,20 +218,28 @@ class Player(pygame.sprite.Sprite):
                 self.vy = 0
                 self.rect.y = self.y
 
-    def collide_with_token(self):
-        token_collision = pygame.sprite.spritecollide(self, self.game.token_sprite, True)
+    def collide_with_enemy(self):
+        enemy_collision = pygame.sprite.spritecollide(self, self.game.enemy_sprites, False)
 
-        randx = random.randint(64, DISPLAY_WIDTH-64)
-        randy = random.randint(64, DISPLAY_HEIGHT-64)
+        if enemy_collision:
+            self.game.playing = False
+
+        return self.game.playing
+
+    # def collide_with_token(self):
+    #     token_collision = pygame.sprite.spritecollide(self, self.game.token_sprite, True)
+
+    #     randx = random.randint(64, DISPLAY_WIDTH-64)
+    #     randy = random.randint(64, DISPLAY_HEIGHT-64)
         
-        if token_collision:
-            token = Token(self.display, randx, randy, self.game.token_img)
-            self.game.token_sprite.add(token)
-            self.game.all_sprites.add(token)
+    #     if token_collision:
+    #         token = Token(self.display, randx, randy, self.game.token_img)
+    #         self.game.token_sprite.add(token)
+    #         self.game.all_sprites.add(token)
 
-            self.scorecount += 1
+    #         self.scorecount += 1
 
-        return self.scorecount
+    #     return self.scorecount
 
     def update(self):
         self.get_keys()
@@ -188,37 +248,48 @@ class Player(pygame.sprite.Sprite):
         self.y += self.vy
 
         self.rect.x = self.x
-        self.collide_with_wall('x')
+        self.collide_with_buildings('x')
         self.rect.y = self.y
-        self.collide_with_wall('y')
+        self.collide_with_buildings('y')
+        
+        if self.rect.x < 0:
+            self.rect.x = 0
+        if self.rect.x > MAP_WIDTH - self.rect.width:
+            self.rect.x = MAP_WIDTH - self.rect.width
+        if self.rect.y < 0:
+            self.rect.y = 0
+        if self.rect.y > MAP_HEIGHT - self.rect.height:
+            self.rect.y = MAP_HEIGHT - self.rect.height
+        
+        self.collide_with_enemy()
 
-        self.collide_with_token()
+        # self.collide_with_token()
 
-    def shoot(self):
-        self.get_keys()
+    # def shoot(self):
+    #     self.get_keys()
 
-        self.bulletx = self.rect.centerx - 30
-        self.bullety = self.rect.centery - 10
+    #     self.bulletx = self.rect.centerx - 30
+    #     self.bullety = self.rect.centery - 10
 
-        bullet = Bullet(self.display, self.bulletx, self.bullety, self.game.bullet_image_list)
-        self.game.bullet_sprite.add(bullet)
-        self.game.all_sprites.add(bullet)
+    #     bullet = Bullet(self.display, self.bulletx, self.bullety, self.game.bullet_image_list)
+    #     self.game.bullet_sprite.add(bullet)
+    #     self.game.all_sprites.add(bullet)
 
-        if self.bullety < 0:
-            self.game.bullet_sprite.remove(bullet)
-            self.game.all_sprites.remove(bullet)
+    #     if self.bullety < 0:
+    #         self.game.bullet_sprite.remove(bullet)
+    #         self.game.all_sprites.remove(bullet)
 
-        if self.bullety > 768:
-            self.game.bullet_sprite.remove(bullet)
-            self.game.all_sprites.remove(bullet)
+    #     if self.bullety > 768:
+    #         self.game.bullet_sprite.remove(bullet)
+    #         self.game.all_sprites.remove(bullet)
 
-        if self.bulletx < 0:
-            self.game.bullet_sprite.remove(bullet)
-            self.game.all_sprites.remove(bullet)
+    #     if self.bulletx < 0:
+    #         self.game.bullet_sprite.remove(bullet)
+    #         self.game.all_sprites.remove(bullet)
 
-        if self.bulletx > 1568:
-            self.game.bullet_sprite.remove(bullet)
-            self.game.all_sprites.remove(bullet)
+    #     if self.bulletx > 1568:
+    #         self.game.bullet_sprite.remove(bullet)
+    #         self.game.all_sprites.remove(bullet)
 
         
 
