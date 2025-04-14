@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="74">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="93">
  <tileset firstgid="1" source="tiny-town-tilemap.tsx"/>
  <tileset firstgid="133" source="roguelikecreatures.tsx"/>
  <layer id="1" name="Ground" width="30" height="20" locked="1">
@@ -74,7 +74,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="5" name="Sprites">
+ <objectgroup id="5" name="Sprites" locked="1">
   <object id="1" name="Player" gid="137" x="145.341" y="319.744" width="13.8577" height="13.8577"/>
   <object id="13" name="Enemy" gid="149" x="368.667" y="79.3333" width="16" height="16"/>
   <object id="14" name="Enemy" gid="149" x="438.667" y="145.333" width="16" height="16"/>
@@ -85,7 +85,7 @@
   <object id="72" name="Bow" gid="119" x="152.029" y="319.479" width="7.24382" height="7.87372" visible="0"/>
  </objectgroup>
  <objectgroup id="7" name="Markers" locked="1">
-  <object id="25" name="PlayerSpawn" x="152" y="305">
+  <object id="25" name="PlayerSpawn" x="152.182" y="305">
    <point/>
   </object>
   <object id="27" name="EnemySpawn" x="368" y="248">
@@ -120,5 +120,22 @@
   <object id="48" name="House" x="112" y="256" width="64" height="48"/>
   <object id="50" name="Sign" x="178.75" y="291.75" width="10.75" height="7.75"/>
   <object id="51" name="Sign" x="182.75" y="299.75" width="2.5" height="3.25"/>
+  <object id="74" name="Bush" x="80" y="64" width="16" height="16"/>
+  <object id="75" name="Bush" x="160" y="64" width="16" height="16"/>
+  <object id="76" name="Bush" x="240" y="64" width="16" height="16"/>
+  <object id="77" name="Bush" x="80" y="176" width="16" height="16"/>
+  <object id="78" name="Bush" x="160" y="176" width="16" height="16"/>
+  <object id="79" name="Bush" x="240" y="176" width="16" height="16"/>
+  <object id="81" name="Tree" x="0" y="96" width="16" height="32"/>
+  <object id="83" name="Tree" x="16" y="192" width="16" height="32"/>
+  <object id="84" name="Tree" x="288" y="0" width="16" height="32"/>
+  <object id="85" name="Tree" x="400" y="16" width="16" height="32"/>
+  <object id="86" name="Tree" x="448" y="16" width="16" height="32"/>
+  <object id="87" name="Tree" x="336" y="64" width="16" height="32"/>
+  <object id="88" name="Tree" x="416" y="96" width="16" height="32"/>
+  <object id="89" name="Tree" x="416" y="192" width="16" height="32"/>
+  <object id="90" name="Tree" x="336" y="224" width="16" height="32"/>
+  <object id="91" name="Tree" x="416" y="272" width="16" height="32"/>
+  <object id="92" name="Tree" x="240" y="288" width="16" height="32"/>
  </objectgroup>
 </map>

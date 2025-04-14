@@ -46,34 +46,65 @@ class SpriteSheet():
 
 #         self.display = screen
 
-# class Bullet(pygame.sprite.Sprite):
-#     def __init__(self, screen, x, y, image_list):
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, screen, x, y, image_list):
 
-#         pygame.sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self)
 
-#         self.image_list = image_list
-#         self.image = self.image_list[0]
-#         self.rect = self.image.get_rect()
-#         self.rect.x = x
-#         self.rect.y = y
+        self.image_list = image_list
+        self.image = self.image_list[0]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
-#         self.display = screen
+        self.y_bullet_speed = 10
+        self.x_bullet_speed = 10
 
-#     def update(self):
-#         self.rect.x -= 10
+        self.display = screen
 
-#     def get_keys(self):
+        self.dir = None
 
-#         keys = pygame.key.get_pressed()
+    def get_keys(self):
 
-#         if keys[pygame.K_a]:
-#             self.image = self.image_list[2]
-#         if keys[pygame.K_d]:
-#             self.image = self.image_list[0]
-#         if keys[pygame.K_w]:
-#             self.image = self.image_list[1]
-#         if keys[pygame.K_s]:
-#             self.image = self.image_list[3]
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a]:
+            self.dir = 'left'
+            self.image = self.image_list[2]
+        if keys[pygame.K_d]:
+            self.dir = 'right'
+            self.image = self.image_list[1]
+        if keys[pygame.K_w]:
+            self.dir = 'up'
+            self.image = self.image_list[0]
+        if keys[pygame.K_s]:
+            self.dir = 'down'
+            self.image = self.image_list[3]
+        if not (keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_w] or keys[pygame.K_s]):
+            self.dir = 'none'
+            self.image = self.image_list[0]
+            
+            
+
+    def update(self):
+        self.get_keys()
+    
+        if self.dir == 'left':
+            self.x_bullet_speed = -10
+            self.y_bullet_speed = 0
+        elif self.dir == 'right':
+            self.x_bullet_speed = 10
+            self.y_bullet_speed = 0
+        elif self.dir == 'up':
+            self.y_bullet_speed = -10
+            self.x_bullet_speed = 0
+        elif self.dir == 'down':
+            self.y_bullet_speed = 10
+            self.x_bullet_speed = 0
+        
+        
+        self.rect.x += self.x_bullet_speed
+        self.rect.y += self.y_bullet_speed
 
 # class Background(pygame.sprite.Sprite):
 #     def __init__(self, screen, x, y, img):
@@ -104,6 +135,8 @@ class Colliders(pygame.sprite.Sprite):
 
         self.display = screen
 
+        self.colliders_mask = pygame.mask.from_surface(self.image)
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, screen, x, y, image, game):
 
@@ -111,7 +144,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.game = game
         self.image = image
-        self.player_speed = 3
+        self.speed = 3
         self.display = screen
 
         self.x = x
@@ -122,6 +155,18 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+    def move_towards_player(self):
+        pass
+        # # Find direction vector (dx, dy) between enemy and player.
+        # dirvect = pygame.math.Vector2(self.game.player.rect.x - self.rect.x,
+        #                             self.game.player.rect.y - self.rect.y)
+        # dirvect.normalize()
+        # # Move along this normalized vector towards the player at current speed.
+        # dirvect.scale_to_length(self.speed)
+        # self.rect.move_ip(dirvect)
+            
+
     
 class Key(pygame.sprite.Sprite):
     def __init__(self, screen, x, y, image, game):
@@ -130,7 +175,6 @@ class Key(pygame.sprite.Sprite):
 
         self.game = game
         self.image = image
-        self.player_speed = 3
         self.display = screen
 
         self.x = x
@@ -168,55 +212,94 @@ class Player(pygame.sprite.Sprite):
 
         self.scorecount = 0
 
+        # Create Player Mask
+        self.player_mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.player_mask.to_surface()      # An image of the mask (not needed)
+
     def get_keys(self):
         self.vx, self.vy = 0, 0
-
+        self.dir = None
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
             self.vx = -self.player_speed
             self.vy = 0
             self.image = self.image_list[0]
+            # self.dir = 'left'
         if keys[pygame.K_d]:
             self.vx = self.player_speed
             self.vy = 0
             self.image = self.image_list[0]
+            # self.dir = 'right'
         if keys[pygame.K_w]:
             self.vy = -self.player_speed
             self.vx = 0
             self.image = self.image_list[0]
+            # self.dir = 'up' 
         if keys[pygame.K_s]:
             self.vy = self.player_speed
             self.vx = 0
             self.image = self.image_list[0]
+            # self.dir = 'down'
 
-
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.player_mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.player_mask.to_surface()      # Use this code if you change images during movement
+        # return self.dir
     def collide_with_buildings(self, dir):
-        if dir == 'x':
+        
+        # Mask Collision detection
+        if pygame.sprite.spritecollide(self, self.game.collider_sprites, False):
 
-            hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
-
+            hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False, pygame.sprite.collide_mask)
+            
             if hits:
                 if self.vx > 0:
                     self.x = hits[0].rect.left - self.rect.width
+                    print(hits[0])
+                    # print('right')
                 if self.vx < 0:
                     self.x = hits[0].rect.right
+                    # print('left')
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.height
+                    # print('down')
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                    # print('up')
                 
                 self.vx = 0
                 self.rect.x = self.x
-
-        if dir == 'y':
-
-            hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
-
-            if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                
                 self.vy = 0
                 self.rect.y = self.y
+
+        # Rectangle collision detection
+
+        # if dir == 'x':
+                
+        #     hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
+
+        #     if hits:
+        #         if self.vx > 0:
+        #             self.x = hits[0].rect.left - self.rect.width
+        #         if self.vx < 0:
+        #             self.x = hits[0].rect.right
+                
+        #         self.vx = 0
+        #         self.rect.x = self.x
+
+        # if dir == 'y':
+
+        #     hits = pygame.sprite.spritecollide(self, self.game.collider_sprites, False)
+
+        #     if hits:
+        #         if self.vy > 0:
+        #             self.y = hits[0].rect.top - self.rect.height
+        #         if self.vy < 0:
+        #             self.y = hits[0].rect.bottom
+                
+        #         self.vy = 0
+        #         self.rect.y = self.y
 
     def collide_with_enemy(self):
         enemy_collision = pygame.sprite.spritecollide(self, self.game.enemy_sprites, False)
@@ -264,34 +347,6 @@ class Player(pygame.sprite.Sprite):
         self.collide_with_enemy()
 
         # self.collide_with_token()
-
-    # def shoot(self):
-    #     self.get_keys()
-
-    #     self.bulletx = self.rect.centerx - 30
-    #     self.bullety = self.rect.centery - 10
-
-    #     bullet = Bullet(self.display, self.bulletx, self.bullety, self.game.bullet_image_list)
-    #     self.game.bullet_sprite.add(bullet)
-    #     self.game.all_sprites.add(bullet)
-
-    #     if self.bullety < 0:
-    #         self.game.bullet_sprite.remove(bullet)
-    #         self.game.all_sprites.remove(bullet)
-
-    #     if self.bullety > 768:
-    #         self.game.bullet_sprite.remove(bullet)
-    #         self.game.all_sprites.remove(bullet)
-
-    #     if self.bulletx < 0:
-    #         self.game.bullet_sprite.remove(bullet)
-    #         self.game.all_sprites.remove(bullet)
-
-    #     if self.bulletx > 1568:
-    #         self.game.bullet_sprite.remove(bullet)
-    #         self.game.all_sprites.remove(bullet)
-
-        
 
 class Camera:
     def __init__(self, width, height):

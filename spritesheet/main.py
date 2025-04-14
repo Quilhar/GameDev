@@ -16,10 +16,12 @@ class Game:
         self.running = True
         self.load_images()
         self.playing = False
-
+        self.cd = 0
+ 
     def load_images(self):
         '''load and get all images'''
-        pass
+        self.arrow_image = pygame.image.load('spritesheet/arrow.png')
+        
         # tile_sheet = SpriteSheet('spritesheet/tilemap.png')
         # self.tile_list = []
 
@@ -45,9 +47,10 @@ class Game:
         # self.token_img = pygame.transform.scale(self.token_img, (32, 32))
 
         # #Bullet
-        # self.bullet_image = pygame.image.load('spritesheet/bullet_sprite.png')
-        # self.bullet_image = pygame.transform.scale(self.bullet_image, (35, 35))
-        # self.bullet_image_list = [self.bullet_image, pygame.transform.rotate(self.bullet_image, 90), pygame.transform.rotate(self.bullet_image, 180), pygame.transform.rotate(self.bullet_image, 270)]
+        self.bullet_image = pygame.image.load('spritesheet/arrow.png')
+        self.bullet_image = pygame.transform.scale(self.bullet_image, (12, 16))
+        self.bullet_image_list = [self.bullet_image, pygame.transform.rotate(self.bullet_image, -90), pygame.transform.rotate(self.bullet_image, 90), pygame.transform.rotate(self.bullet_image, 180)]
+
         # #Explosion
         # explosion_sheet = SpriteSheet('spritesheet/explosion.png')
         # self.explosion_list = []
@@ -87,13 +90,14 @@ class Game:
         #sprite groups
         # self.wall_sprite = pygame.sprite.Group()
         # self.token_sprite = pygame.sprite.Group()
-        # self.bullet_sprite = pygame.sprite.Group()
+        self.bullet_sprite = pygame.sprite.Group()
 
         
         self.all_sprites = pygame.sprite.Group()
         self.collider_sprites = pygame.sprite.Group() 
         self.enemy_sprites = pygame.sprite.Group()
         self.key_sprites = pygame.sprite.Group()
+        
 
         self.map = pytmx.load_pygame("/Users/244213/Desktop/GameDev/tiles/level1.tmx")
         self.map_sprites = pygame.sprite.Group()
@@ -105,7 +109,7 @@ class Game:
         #     print(layer)
         # print(self.map.get_layer_by_name('Base'))
 
-        
+    
         for layer in self.map.visible_layers:
         
             tile_width = MAP_WIDTH // self.map.width
@@ -128,7 +132,7 @@ class Game:
                     # Player Object
                     if obj.name == 'Player':
                         # self.player_image_list = [obj.image, pygame.transform.rotate(obj.image, 90), pygame.transform.rotate(obj.image, 180), pygame.transform.rotate(obj.image, 270)]
-                        self.player_image_list = [pygame.transform.scale(obj.image, (obj.image.get_width() * 2, obj.image.get_height() * 2))]
+                        self.player_image_list = [pygame.transform.scale(obj.image, (obj.image.get_width() * SCALEFACTOR, obj.image.get_height() * SCALEFACTOR))]
                         self.player = Player(self.screen, obj.x * SCALEFACTOR, obj.y * SCALEFACTOR, self.player_image_list, self)
                         self.all_sprites.add(self.player)
                     
@@ -144,10 +148,18 @@ class Game:
                     elif obj.name == 'Sign':
                         self.collider = Colliders(self.screen, obj.x * SCALEFACTOR, obj.y * SCALEFACTOR, obj.width * SCALEFACTOR, obj.height * SCALEFACTOR)
                         self.collider_sprites.add(self.collider)
+
+                    elif obj.name == 'Tree':
+                        self.collider = Colliders(self.screen, obj.x * SCALEFACTOR, obj.y * SCALEFACTOR, obj.width * SCALEFACTOR, obj.height * SCALEFACTOR)
+                        self.collider_sprites.add(self.collider)
+
+                    elif obj.name == 'Bush':
+                        self.collider = Colliders(self.screen, obj.x * SCALEFACTOR, obj.y * SCALEFACTOR, obj.width * SCALEFACTOR, obj.height * SCALEFACTOR)
+                        self.collider_sprites.add(self.collider)
                     
                     # Enemy Objects
                     elif obj.name == 'Enemy':
-                        self.enemy_image = pygame.transform.scale(obj.image, (obj.image.get_width() * 2, obj.image.get_height() * 2))
+                        self.enemy_image = pygame.transform.scale(obj.image, (obj.image.get_width() * SCALEFACTOR, obj.image.get_height() * SCALEFACTOR))
                         self.enemy = Enemy(self.screen, obj.x * SCALEFACTOR, obj.y * SCALEFACTOR, self.enemy_image, self)
                         self.enemy_sprites.add(self.enemy)
                         self.all_sprites.add(self.enemy)
@@ -159,9 +171,8 @@ class Game:
                         self.key_sprites.add(self.key)
                         self.all_sprites.add(self.key)
 
-                    
+            self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image_list)
 
-                        
                      
 
         #player sprites
@@ -170,9 +181,6 @@ class Game:
 
         #token sprites
         # self.token = Token(self.screen, self.randx, self.randy, self.token_img)
-        
-        #bullet sprites
-        # self.bullet = Bullet(self.screen, self.player.rect.centerx - 30, self.player.rect.centery - 10, self.bullet_image_list)
         
 
         # for row_index, row in enumerate(LAYOUTS[0]):
@@ -213,9 +221,25 @@ class Game:
         self.player.update()       
         # self.score = self.player.collide_with_token()
         self.pov.update(self.player)
+        self.bullet.update()
+        self.bullet.get_keys()
+        self.enemy.move_towards_player()
 
+        if self.bullet.rect.y < 0:
+            self.bullet_sprite.remove(self.bullet)
+            self.all_sprites.remove(self.bullet)
 
-            
+        if self.bullet.rect.y > MAP_HEIGHT:
+            self.bullet_sprite.remove(self.bullet)
+            self.all_sprites.remove(self.bullet)
+
+        if self.bullet.rect.x < 0:
+            self.bullet_sprite.remove(self.bullet)
+            self.all_sprites.remove(self.bullet)
+
+        if self.bullet.rect.x > MAP_WIDTH:
+            self.bullet_sprite.remove(self.bullet)
+            self.all_sprites.remove(self.bullet)
 
     def draw(self):
         '''Fill the screen, draw the objets and flip'''
@@ -226,15 +250,24 @@ class Game:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.pov.get_view(sprite))
 
+
         # font = pygame.font.SysFont('Calibri', 35, True, False)
         # score_txt = f'Score: {self.score}'
         # score_img = font.render(score_txt, True, WHITE)
         # self.screen.blit(score_img, [260, 60])
+        
+        # self.screen.blit(self.player.mask_image, self.player.rect.topleft)
+        # pygame.draw.rect(self.screen, BLACK, self.player.rect, 3)
 
         pygame.display.flip()
 
     def events(self):
         '''game loop events'''
+
+        # self.cd += pygame.time.get_ticks()
+        # if self.cd >= 3000:
+        #     self.cd = 0
+
         for event in pygame.event.get():
             # Events to end the game
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -245,9 +278,16 @@ class Game:
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    pass
-                    # self.player.shoot()
-            
+
+                    ############## BULLET ##############
+                    self.bulletx = self.player.rect.centerx - 6
+                    self.bullety = self.player.rect.centery - 5
+
+                    self.bullet = Bullet(self.screen, self.bulletx, self.bullety, self.bullet_image_list)
+                    self.bullet_sprite.add(self.bullet)
+                    self.all_sprites.add(self.bullet)
+
+                
     def run(self):
         '''contains main game loop'''
 
