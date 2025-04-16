@@ -171,7 +171,7 @@ class Game:
                         self.key_sprites.add(self.key)
                         self.all_sprites.add(self.key)
 
-            self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image_list)
+        self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image_list, self)
 
                      
 
@@ -218,43 +218,41 @@ class Game:
 
     def update(self):
         '''Run all updates'''
-        self.player.update()       
-        # self.score = self.player.collide_with_token()
+        # self.player.update()       
+        # self.score = self.bullet.scorecount
         self.pov.update(self.player)
-        self.bullet.update()
-        self.bullet.get_keys()
-        self.enemy.move_towards_player()
+        # self.bullet.update()
+        self.all_sprites.update()
+        
+        # for enemy in self.enemy_sprites:
+        #     self.enemy.move_towards_player()
 
         if self.bullet.rect.y < 0:
-            self.bullet_sprite.remove(self.bullet)
-            self.all_sprites.remove(self.bullet)
+            self.bullet.remove()
 
         if self.bullet.rect.y > MAP_HEIGHT:
-            self.bullet_sprite.remove(self.bullet)
-            self.all_sprites.remove(self.bullet)
+            self.bullet.remove()
 
         if self.bullet.rect.x < 0:
-            self.bullet_sprite.remove(self.bullet)
-            self.all_sprites.remove(self.bullet)
+            self.bullet.remove()
 
         if self.bullet.rect.x > MAP_WIDTH:
-            self.bullet_sprite.remove(self.bullet)
-            self.all_sprites.remove(self.bullet)
+            self.bullet.remove()
 
     def draw(self):
         '''Fill the screen, draw the objets and flip'''
 
-        # self.screen.fill(WHITE)
-
         # camera requires blitting rather than calling all_sprites draw method
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.pov.get_view(sprite))
+            self.screen.blit(sprite.image, sprite.rect.topleft)
+        
+        # for bullet in self.bullet_sprite:
+        #     self.screen.blit(bullet.image, bullet.rect.topleft) 
 
-
-        # font = pygame.font.SysFont('Calibri', 35, True, False)
+        # font = pygame.font.SysFont('Calibri', 25, True, False)
         # score_txt = f'Score: {self.score}'
         # score_img = font.render(score_txt, True, WHITE)
-        # self.screen.blit(score_img, [260, 60])
+        # self.screen.blit(score_img, [185, 40])
         
         # self.screen.blit(self.player.mask_image, self.player.rect.topleft)
         # pygame.draw.rect(self.screen, BLACK, self.player.rect, 3)
@@ -280,10 +278,10 @@ class Game:
                 if event.key == pygame.K_SPACE:
 
                     ############## BULLET ##############
-                    self.bulletx = self.player.rect.centerx - 6
-                    self.bullety = self.player.rect.centery - 5
+                    bulletx = self.player.rect.centerx - 6
+                    bullety = self.player.rect.centery - 5
 
-                    self.bullet = Bullet(self.screen, self.bulletx, self.bullety, self.bullet_image_list)
+                    self.bullet = Bullet(self.screen, bulletx, bullety, self.bullet_image_list, self)
                     self.bullet_sprite.add(self.bullet)
                     self.all_sprites.add(self.bullet)
 

@@ -47,7 +47,7 @@ class SpriteSheet():
 #         self.display = screen
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, image_list):
+    def __init__(self, screen, x, y, image_list, game):
 
         pygame.sprite.Sprite.__init__(self)
 
@@ -63,6 +63,10 @@ class Bullet(pygame.sprite.Sprite):
         self.display = screen
 
         self.dir = None
+
+        self.game = game
+
+        self.scorecount = 0
 
     def get_keys(self):
 
@@ -82,9 +86,7 @@ class Bullet(pygame.sprite.Sprite):
             self.image = self.image_list[3]
         if not (keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_w] or keys[pygame.K_s]):
             self.dir = 'none'
-            self.image = self.image_list[0]
-            
-            
+            self.image = self.image_list[1]
 
     def update(self):
         self.get_keys()
@@ -101,10 +103,26 @@ class Bullet(pygame.sprite.Sprite):
         elif self.dir == 'down':
             self.y_bullet_speed = 10
             self.x_bullet_speed = 0
+        else:
+            self.y_bullet_speed = 0
         
         
         self.rect.x += self.x_bullet_speed
         self.rect.y += self.y_bullet_speed
+
+        self.bullet_collision()
+
+    def bullet_collision(self):
+        hit = pygame.sprite.spritecollide(self, self.game.enemy_sprites, True)
+
+        if hit:
+            self.scorecount += 1
+        
+        return self.scorecount
+
+    def draw(self):
+        self.display.blit(self.image, self.rect)
+            
 
 # class Background(pygame.sprite.Sprite):
 #     def __init__(self, screen, x, y, img):
@@ -144,7 +162,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.game = game
         self.image = image
-        self.speed = 3
+        self.speed = 2
         self.display = screen
 
         self.x = x
