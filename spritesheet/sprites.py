@@ -47,7 +47,7 @@ class SpriteSheet():
 #         self.display = screen
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, image_list, game):
+    def __init__(self, screen, x, y, image_list, dir, game):
 
         pygame.sprite.Sprite.__init__(self)
 
@@ -62,49 +62,32 @@ class Bullet(pygame.sprite.Sprite):
 
         self.display = screen
 
-        self.dir = None
+        self.dir = dir
 
         self.game = game
 
-        self.scorecount = 0
-
-    def get_keys(self):
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_a]:
-            self.dir = 'left'
-            self.image = self.image_list[2]
-        if keys[pygame.K_d]:
-            self.dir = 'right'
-            self.image = self.image_list[1]
-        if keys[pygame.K_w]:
-            self.dir = 'up'
-            self.image = self.image_list[0]
-        if keys[pygame.K_s]:
-            self.dir = 'down'
-            self.image = self.image_list[3]
-        if not (keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_w] or keys[pygame.K_s]):
-            self.dir = 'none'
-            self.image = self.image_list[1]
-
     def update(self):
-        self.get_keys()
     
         if self.dir == 'left':
             self.x_bullet_speed = -10
             self.y_bullet_speed = 0
+            self.image = self.image_list[2]
         elif self.dir == 'right':
             self.x_bullet_speed = 10
             self.y_bullet_speed = 0
+            self.image = self.image_list[1]
         elif self.dir == 'up':
             self.y_bullet_speed = -10
             self.x_bullet_speed = 0
+            self.image = self.image_list[0]
         elif self.dir == 'down':
             self.y_bullet_speed = 10
             self.x_bullet_speed = 0
+            self.image = self.image_list[3]
         else:
             self.y_bullet_speed = 0
+            self.x_bullet_speed = 0
+            self.image = self.image_list[1]
         
         
         self.rect.x += self.x_bullet_speed
@@ -116,9 +99,10 @@ class Bullet(pygame.sprite.Sprite):
         hit = pygame.sprite.spritecollide(self, self.game.enemy_sprites, True)
 
         if hit:
-            self.scorecount += 1
-        
-        return self.scorecount
+            self.game.scorecount += 1
+            self.game.all_sprites.remove(self)
+            self.game.bullet_sprites.remove(self)
+            
 
     def draw(self):
         self.display.blit(self.image, self.rect)
@@ -183,8 +167,6 @@ class Enemy(pygame.sprite.Sprite):
         # # Move along this normalized vector towards the player at current speed.
         # dirvect.scale_to_length(self.speed)
         # self.rect.move_ip(dirvect)
-            
-
     
 class Key(pygame.sprite.Sprite):
     def __init__(self, screen, x, y, image, game):
@@ -222,7 +204,7 @@ class Player(pygame.sprite.Sprite):
         self.vx = 0
         self.image = self.image_list[0]
         
-        
+        self.dir = 'right'
 
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -236,29 +218,29 @@ class Player(pygame.sprite.Sprite):
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
-        self.dir = None
+        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
             self.vx = -self.player_speed
             self.vy = 0
             self.image = self.image_list[0]
-            # self.dir = 'left'
+            self.dir = 'left'
         if keys[pygame.K_d]:
             self.vx = self.player_speed
             self.vy = 0
             self.image = self.image_list[0]
-            # self.dir = 'right'
+            self.dir = 'right'
         if keys[pygame.K_w]:
             self.vy = -self.player_speed
             self.vx = 0
             self.image = self.image_list[0]
-            # self.dir = 'up' 
+            self.dir = 'up' 
         if keys[pygame.K_s]:
             self.vy = self.player_speed
             self.vx = 0
             self.image = self.image_list[0]
-            # self.dir = 'down'
+            self.dir = 'down'
 
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.player_mask = pygame.mask.from_surface(self.image)
@@ -366,34 +348,36 @@ class Player(pygame.sprite.Sprite):
 
         # self.collide_with_token()
 
-class Camera:
-    def __init__(self, width, height):
-        # create a rectangle that encompasses the entire map
-        self.camera = pygame.Rect(0, 0, width, height)
-        self.width = width
-        self.height = height
+class Camera():
+   def __init__(self, width, height):
+       #create a rect that encompasses the entire map
+       self.camera = pygame.Rect(0, 0, width, height)
+       self.width = width
+       self.height = height
 
-    def get_view(self, sprite_object):
-        # all sprite objects will be moved based on the camera's position
-        return sprite_object.rect.move(self.camera.topleft)
-    
-    def update(self, target):
-        # shift the tile map in the opposite directs of the target
-        # addding half the window size to keep the target in the center
-        x = -target.rect.x + DISPLAY_WIDTH // 2
-        y = -target.rect.y + DISPLAY_HEIGHT // 2
+   def get_view(self, sprite_object):
+       # all sprite objects (walls, platforms, etc) will be moved
+       # based on the cameras updated position
+       return sprite_object.rect.move(self.camera.topleft)
 
-        # to stop scrollling when the edge at the edge of the title map
-        # if the target moes too far left, or up, make x/y stay at 0
-        x = min(0, x)
-        y = min(0, y)
+   def update(self, target):
+       # shift the tile_map in the opposite direction of the target
+       # adding half the window size to keep the target centered
+       x = -target.rect.x + int(DISPLAY_WIDTH / 2)
+       y = -target.rect.y + int(DISPLAY_HEIGHT / 2)
 
-        # if the target moves too far right or down, make the target stop
-        # at the width of the title map minus the width of the window
-        x = max(-1 * (self.width - DISPLAY_WIDTH), x)
-        y = max(-1 * (self.height - DISPLAY_HEIGHT), y)
-
-        self.camera = pygame.Rect(x, y, self.width, self.height)
+       # to stop the scrolling when at the edge of the tile map
+       # if the target moves too far left or up make x/y stay 0
+       x = min(0, x)
+       y = min(0, y)
+      
+       # if the target moves too far down or right make x/y stay at
+       # the width of the tile-map minus the width of the window
+       x = max(-1*(self.width - DISPLAY_WIDTH), x)
+       y = max(-1*(self.height - DISPLAY_HEIGHT), y)
+      
+       # adjust the camera based on the new location
+       self.camera = pygame.Rect(x, y, self.width, self.height)
 
 
 

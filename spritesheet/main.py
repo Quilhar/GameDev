@@ -10,6 +10,11 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         pygame.font.init()
+        
+        self.goblin_sound = pygame.mixer.Sound('spritesheet/Goblin_01.mp3')
+
+        # pygame.mixer.music.load('spritesheet/TheLoomingBattle.OGG')
+        # pygame.mixer.music.play() #add -1 as an argument to loop the music
 
         self.screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -17,6 +22,8 @@ class Game:
         self.load_images()
         self.playing = False
         self.cd = 0
+        self.scorecount = 0
+
  
     def load_images(self):
         '''load and get all images'''
@@ -90,7 +97,7 @@ class Game:
         #sprite groups
         # self.wall_sprite = pygame.sprite.Group()
         # self.token_sprite = pygame.sprite.Group()
-        self.bullet_sprite = pygame.sprite.Group()
+        self.bullet_sprites = pygame.sprite.Group()
 
         
         self.all_sprites = pygame.sprite.Group()
@@ -171,7 +178,7 @@ class Game:
                         self.key_sprites.add(self.key)
                         self.all_sprites.add(self.key)
 
-        self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image_list, self)
+        self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image_list, self.player.dir, self)
 
                      
 
@@ -218,41 +225,31 @@ class Game:
 
     def update(self):
         '''Run all updates'''
-        # self.player.update()       
-        # self.score = self.bullet.scorecount
+        # self.player.update()      
+        # self.score = self.bullet.bullet_collision() 
         self.pov.update(self.player)
         # self.bullet.update()
         self.all_sprites.update()
         
         # for enemy in self.enemy_sprites:
         #     self.enemy.move_towards_player()
-
-        if self.bullet.rect.y < 0:
-            self.bullet.remove()
-
-        if self.bullet.rect.y > MAP_HEIGHT:
-            self.bullet.remove()
-
-        if self.bullet.rect.x < 0:
-            self.bullet.remove()
-
-        if self.bullet.rect.x > MAP_WIDTH:
-            self.bullet.remove()
+        for bullet in self.bullet_sprites:
+            if bullet.rect.y <= 0 or bullet.rect.y >= MAP_HEIGHT or bullet.rect.x <= 0 or bullet.rect.x >= MAP_WIDTH:
+                self.bullet_sprites.remove(bullet)
+                self.all_sprites.remove(bullet)
 
     def draw(self):
         '''Fill the screen, draw the objets and flip'''
 
         # camera requires blitting rather than calling all_sprites draw method
-        for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, sprite.rect.topleft)
+        for sprite in self.all_sprites:               
+            self.screen.blit(sprite.image, self.pov.get_view(sprite))
         
-        # for bullet in self.bullet_sprite:
-        #     self.screen.blit(bullet.image, bullet.rect.topleft) 
 
-        # font = pygame.font.SysFont('Calibri', 25, True, False)
-        # score_txt = f'Score: {self.score}'
-        # score_img = font.render(score_txt, True, WHITE)
-        # self.screen.blit(score_img, [185, 40])
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        score_txt = f'Score: {self.scorecount}'
+        score_img = font.render(score_txt, True, WHITE)
+        self.screen.blit(score_img, [185, 40])
         
         # self.screen.blit(self.player.mask_image, self.player.rect.topleft)
         # pygame.draw.rect(self.screen, BLACK, self.player.rect, 3)
@@ -262,9 +259,10 @@ class Game:
     def events(self):
         '''game loop events'''
 
-        # self.cd += pygame.time.get_ticks()
-        # if self.cd >= 3000:
-        #     self.cd = 0
+        self.cd += pygame.time.get_ticks()
+
+        if self.cd > 3000:
+            self.cd = 0
 
         for event in pygame.event.get():
             # Events to end the game
@@ -275,15 +273,16 @@ class Game:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and self.cd == 0:
 
                     ############## BULLET ##############
                     bulletx = self.player.rect.centerx - 6
                     bullety = self.player.rect.centery - 5
 
-                    self.bullet = Bullet(self.screen, bulletx, bullety, self.bullet_image_list, self)
-                    self.bullet_sprite.add(self.bullet)
+                    self.bullet = Bullet(self.screen, bulletx, bullety, self.bullet_image_list, self.player.dir, self)
+                    self.bullet_sprites.add(self.bullet)
                     self.all_sprites.add(self.bullet)
+
 
                 
     def run(self):
@@ -299,11 +298,61 @@ class Game:
 
     def show_start_screen(self):
         '''the screen to start the game'''
-        pass
+
+        while self.playing:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.playing = False
+                    self.running = False
+                if event.type == pygame.KEYDOWN:
+                    self.playing = True
+
+            self.screen.fill(BLACK)
+            font = pygame.font.SysFont('Calibri', 50, True, False)
+            title_txt = 'Rpygame Game'
+            title_img = font.render(title_txt, True, WHITE)
+            title_rect = title_img.get_rect()
+            title_rect.center = (DISPLAY_WIDTH // 2, DISPLAY_HEIGHT // 2)
+            self.screen.blit(title_img, title_rect)
+
+            font = pygame.font.SysFont('Calibri', 25, True, False)
+            start_txt = 'Press any key to start'
+            start_img = font.render(start_txt, True, WHITE)
+            start_rect = start_img.get_rect()
+            start_rect.center = (DISPLAY_WIDTH // 2, DISPLAY_HEIGHT // 2 + 50)
+            self.screen.blit(start_img, start_rect)
+
+            pygame.display.flip()
 
     def game_over_screen(self):
         '''the game over screen'''
-        pass
+
+        while self.playing:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.playing = False
+                    self.running = False
+                if event.type == pygame.KEYDOWN:
+                    self.playing = True
+                    
+        self.screen.fill(BLACK)
+        font = pygame.font.SysFont('Calibri', 50, True, False)
+        game_over_txt = 'Game Over'
+        game_over_img = font.render(game_over_txt, True, WHITE)
+        game_over_rect = game_over_img.get_rect()
+        game_over_rect.center = (DISPLAY_WIDTH // 2, DISPLAY_HEIGHT // 2)
+        self.screen.blit(game_over_img, game_over_rect)
+
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        start_txt = 'Press any key to start'
+        start_img = font.render(start_txt, True, WHITE)
+        start_rect = start_img.get_rect()
+        start_rect.center = (DISPLAY_WIDTH // 2, DISPLAY_HEIGHT // 2 + 50)
+        self.screen.blit(start_img, start_rect)
+        pygame.display.flip()
+
+        self.scorecount = 0
+
 
 #########################################################
 ###                     PLAY GAME                     ###
@@ -311,11 +360,16 @@ class Game:
 
 game = Game()
 
-game.show_start_screen()
+
 
 while game.running:
+    game.show_start_screen()
     game.new()
+
+while game.playing == False:
     game.game_over_screen()
+    game.show_start_screen()
+    pygame.mixer.music.stop()
 
 pygame.quit()
 

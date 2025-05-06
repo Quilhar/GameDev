@@ -75,7 +75,7 @@
 </data>
  </layer>
  <objectgroup id="5" name="Sprites" locked="1">
-  <object id="1" name="Player" gid="137" x="145.341" y="319.744" width="13.8577" height="13.8577"/>
+  <object id="1" name="Player" gid="137" x="64" y="80" width="13.8577" height="13.8577"/>
   <object id="13" name="Enemy" gid="149" x="368.667" y="79.3333" width="16" height="16"/>
   <object id="14" name="Enemy" gid="149" x="438.667" y="145.333" width="16" height="16"/>
   <object id="15" name="Enemy" gid="149" x="360" y="260" width="16" height="16"/>
@@ -85,7 +85,7 @@
   <object id="72" name="Bow" gid="119" x="152.029" y="319.479" width="7.24382" height="7.87372" visible="0"/>
  </objectgroup>
  <objectgroup id="7" name="Markers" locked="1">
-  <object id="25" name="PlayerSpawn" x="152.182" y="305">
+  <object id="25" name="PlayerSpawn" x="70.9091" y="73.4545">
    <point/>
   </object>
   <object id="27" name="EnemySpawn" x="368" y="248">

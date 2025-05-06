@@ -1,4 +1,4 @@
-import pygame as pg
+import pygame as pygame
 import math
 import random
 
@@ -26,71 +26,71 @@ BRICK = (188, 74, 60)
 #Game screens
 def game_start():
     FPS = 60
-    pg.init()
-    pg.font.init()
+    pygame.init()
+    pygame.font.init()
 
-    screen = pg.display.set_mode([width, height])
-    clock = pg.time.Clock()
+    screen = pygame.display.set_mode([width, height])
+    clock = pygame.time.Clock()
 
     playing = True
 
-    pg.mouse.set_visible(False)
+    pygame.mouse.set_visible(False)
 
 
     while playing:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 playing = False
 
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_RETURN:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
                     playing = False
       
 
     ####
         screen.fill(BLACK)
 
-        font = pg.font.SysFont('Calibri', 50, True, False)
+        font = pygame.font.SysFont('Calibri', 50, True, False)
         start_txt = 'Press Enter to Start the Game'
         title_img = font.render(start_txt, True, WHITE)
         screen.blit(title_img, [425,450])
         
     ####
     # Update the Screen With New Drawings
-        pg.display.flip()
+        pygame.display.flip()
 
     # Limit to FPS
         clock.tick(FPS)
 def game_over(game_score):
     FPS = 60
-    pg.init()
-    pg.font.init()
+    pygame.init()
+    pygame.font.init()
 
-    screen = pg.display.set_mode([width, height])
-    clock = pg.time.Clock()
+    screen = pygame.display.set_mode([width, height])
+    clock = pygame.time.Clock()
 
     playing = True
 
-    pg.mouse.set_visible(False)
+    pygame.mouse.set_visible(False)
 
     high_score = 0
     if game_score > high_score:
         high_score = game_score
 
     while playing:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 playing = False
                 game_start()
 
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_RETURN:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
                     playing = False
 
     ####
         screen.fill(BLACK)
 
-        font = pg.font.SysFont('Calibri', 50, True, False)
+        font = pygame.font.SysFont('Calibri', 50, True, False)
 
         score_txt = f'You got {game_score}pts'
         high_score_txt = f'High Score = {high_score}pts'
@@ -106,7 +106,7 @@ def game_over(game_score):
         
     ####
     # Update the Screen With New Drawings
-        pg.display.flip()
+        pygame.display.flip()
 
     # Limit to FPS
         clock.tick(FPS)
@@ -157,11 +157,11 @@ def game_play():
     def draw_ship(x, y, body_width, body_height, win_width, win_height, top_col, bot_col):
     
         #Ship top
-        pg.draw.ellipse(screen, top_col, [x + (body_width - win_width) // 2, y - win_height, win_width, win_height + 20])
+        pygame.draw.ellipse(screen, top_col, [x + (body_width - win_width) // 2, y - win_height, win_width, win_height + 20])
 
 
         #Ship bot
-        pg.draw.ellipse(screen, bot_col, [x, y, body_width, body_height])
+        pygame.draw.ellipse(screen, bot_col, [x, y, body_width, body_height])
 
     ##### Bullet
     b_xloc = None
@@ -171,7 +171,7 @@ def game_play():
 
     def draw_bullet(player_x, player_y):
         
-        pg.draw.arc(screen, WHITE, [(player_x + var_body_width/2) - 5, player_y + 10, 10, 10], 0, math.pi)
+        pygame.draw.arc(screen, WHITE, [(player_x + var_body_width/2) - 5, player_y + 10, 10, 10], 0, math.pi)
 
         b_xcollision = (player_x + var_body_width/2) - 5
         b_ycollision = player_y + 10
@@ -183,7 +183,7 @@ def game_play():
     def drawBuilding(color, x1, y1, width, height, window_color, cols, rows):
 
         #Main
-        pg.draw.rect(screen, color, [x1, y1, width, height])
+        pygame.draw.rect(screen, color, [x1, y1, width, height])
 
         #Windows
         winx_offset = 35
@@ -194,7 +194,7 @@ def game_play():
         for row in range(rows):
             for col in range(cols):
 
-                pg.draw.rect(screen, window_color, [x1 + winx_offset, y1 + winy_offset, width/4, width/4], )
+                pygame.draw.rect(screen, window_color, [x1 + winx_offset, y1 + winy_offset, width/4, width/4], )
             
                 winx_offset += 75
 
@@ -216,7 +216,7 @@ def game_play():
 
         for i in range(len(lasers)):
     
-            pg.draw.rect(screen, RED, [lasers[i][0], lasers[i][1], 10, 20], 5)
+            pygame.draw.rect(screen, RED, [lasers[i][0], lasers[i][1], 10, 20], 5)
 
             lasers[i][1] += laser_speed
            
@@ -233,49 +233,49 @@ def game_play():
     #Collion Vars 
     laser_hitbox_x = lasers[0][0]
     FPS = 60
-    pg.init()
-    pg.font.init()
+    pygame.init()
+    pygame.font.init()
 
-    screen = pg.display.set_mode([width, height])
-    clock = pg.time.Clock()
+    screen = pygame.display.set_mode([width, height])
+    clock = pygame.time.Clock()
 
     playing = True
 
-    pg.mouse.set_visible(False)
+    pygame.mouse.set_visible(False)
 
     # Main Game Loop
     while playing:
 
         # The Event Loop
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 playing = False
 
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_a:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
                     ship_x_speed = -10
-                elif event.key == pg.K_d:
+                elif event.key == pygame.K_d:
                     ship_x_speed = 10
-                elif event.key == pg.K_s:
+                elif event.key == pygame.K_s:
                     ship_y_speed = 10
-                elif event.key == pg.K_w:
+                elif event.key == pygame.K_w:
                     ship_y_speed = -10
-                elif event.key == pg.K_RETURN:
+                elif event.key == pygame.K_RETURN:
                     playing = False
                 
-                if event.key == pg.K_SPACE:
+                if event.key == pygame.K_SPACE:
                     b_speed = -3
                     b_xloc = ship_x_loc
                     b_yloc = ship_y_loc
                     bullets.append([b_xloc, b_yloc])
 
-            elif event.type == pg.KEYUP:
-                if event.key == pg.K_a or event.key == pg.K_d:
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_a or event.key == pygame.K_d:
                     ship_x_speed = 0
-                elif event.key == pg.K_w or event.key == pg.K_s:
+                elif event.key == pygame.K_w or event.key == pygame.K_s:
                     ship_y_speed = 0
         
-        # mouse_pos = pg.mouse.get_pos()
+        # mouse_pos = pygame.mouse.get_pos()
 
         ship_x_loc += ship_x_speed
         ship_y_loc += ship_y_speed
@@ -300,7 +300,7 @@ def game_play():
         ## Stars
 
         for star in stars:
-            pg.draw.ellipse(screen, WHITE, [0 + star[0], 0 + star[1], 5, 5])
+            pygame.draw.ellipse(screen, WHITE, [0 + star[0], 0 + star[1], 5, 5])
 
         ##Buildings
         drawBuilding(BRICK, 20, height/2, 200, height/2, DARKISHYELLOW, 2, 8)
@@ -310,7 +310,7 @@ def game_play():
         drawBuilding(BRICK, 1050, 650, 200, 250, DARKISHYELLOW, 2, 8)
 
         ##Ground 
-        pg.draw.rect(screen, DARKGREEN, [0, 900, 1400, 100])
+        pygame.draw.rect(screen, DARKGREEN, [0, 900, 1400, 100])
 
 
         ##Meteor Shower
@@ -329,7 +329,7 @@ def game_play():
             meteor_line[0] = tuple(start)
             meteor_line[1] = tuple(end)
 
-            pg.draw.line(screen, WHITE, start, end, 5)
+            pygame.draw.line(screen, WHITE, start, end, 5)
 
             if meteor_line[0][0] > width:
                 meteor_line[0] = (-250, meteor_line[0][1])
@@ -341,8 +341,8 @@ def game_play():
         if shadow_pos < 275:
             shadow_speed = 1
 
-        pg.draw.ellipse(screen, MOON, [275, 75, 100, 100])
-        pg.draw.ellipse(screen, BLACK, [shadow_pos, 75, 100, 100])
+        pygame.draw.ellipse(screen, MOON, [275, 75, 100, 100])
+        pygame.draw.ellipse(screen, BLACK, [shadow_pos, 75, 100, 100])
         shadow_pos += shadow_speed
             
         ## Ship
@@ -368,7 +368,7 @@ def game_play():
             game_over(game_score)
         
     # Update the Screen With New Drawings
-        pg.display.flip()
+        pygame.display.flip()
 
     # Limit to FPS
         clock.tick(FPS)
@@ -384,7 +384,7 @@ while playing:
     game_score = game_play()
     playing = game_over(game_score)
 
-pg.quit()
+pygame.quit()
 
 
 

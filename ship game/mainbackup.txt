@@ -3,29 +3,29 @@
 # while playing:
 
 #     # The Event Loop
-#     for event in pg.event.get():
-#         if event.type == pg.QUIT:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
 #             playing = False
 
-#         elif event.type == pg.KEYDOWN:
-#             if event.key == pg.K_a:
+#         elif event.type == pygame.KEYDOWN:
+#             if event.key == pygame.K_a:
 #                 ship_x_speed = -10
-#             elif event.key == pg.K_d:
+#             elif event.key == pygame.K_d:
 #                 ship_x_speed = 10
-#             elif event.key == pg.K_s:
+#             elif event.key == pygame.K_s:
 #                 ship_y_speed = 10
-#             elif event.key == pg.K_w:
+#             elif event.key == pygame.K_w:
 #                 ship_y_speed = -10
-#             elif event.key == pg.K_RETURN:
+#             elif event.key == pygame.K_RETURN:
 #                 playing = False
 
-#         elif event.type == pg.KEYUP:
-#             if event.key == pg.K_a or event.key == pg.K_d:
+#         elif event.type == pygame.KEYUP:
+#             if event.key == pygame.K_a or event.key == pygame.K_d:
 #                 ship_x_speed = 0
-#             elif event.key == pg.K_w or event.key == pg.K_s:
+#             elif event.key == pygame.K_w or event.key == pygame.K_s:
 #                 ship_y_speed = 0
     
-#     # mouse_pos = pg.mouse.get_pos()
+#     # mouse_pos = pygame.mouse.get_pos()
 
 #     ship_x_loc += ship_x_speed
 #     ship_y_loc += ship_y_speed
@@ -51,7 +51,7 @@
 #     ## Stars
 
 #     for star in stars:
-#         pg.draw.ellipse(screen, WHITE, [0 + star[0], 0 + star[1], 5, 5])
+#         pygame.draw.ellipse(screen, WHITE, [0 + star[0], 0 + star[1], 5, 5])
 
 #     ##Buildings
 #     drawBuilding(GREY, 20, height/2, 200, height/2, DARKISHYELLOW, 2, 8)
@@ -61,7 +61,7 @@
 #     drawBuilding(GREY, 1050, 650, 200, 250, DARKISHYELLOW, 2, 8)
 
 #     ##Ground 
-#     pg.draw.rect(screen, DARKGREEN, [0, 900, 1400, 100])
+#     pygame.draw.rect(screen, DARKGREEN, [0, 900, 1400, 100])
 
 
 #     ##Meteor Shower
@@ -80,7 +80,7 @@
 #         meteor_line[0] = tuple(start)
 #         meteor_line[1] = tuple(end)
 
-#         pg.draw.line(screen, WHITE, start, end, 5)
+#         pygame.draw.line(screen, WHITE, start, end, 5)
 
 #         if meteor_line[0][0] > width:
 #             meteor_line[0] = (-250, meteor_line[0][1])
@@ -92,8 +92,8 @@
 #     if shadow_pos < 275:
 #         shadow_speed = 1
 
-#     pg.draw.ellipse(screen, MOON, [275, 75, 100, 100])
-#     pg.draw.ellipse(screen, BLACK, [shadow_pos, 75, 100, 100])
+#     pygame.draw.ellipse(screen, MOON, [275, 75, 100, 100])
+#     pygame.draw.ellipse(screen, BLACK, [shadow_pos, 75, 100, 100])
 #     shadow_pos += shadow_speed
         
 #     ## Ship
@@ -111,7 +111,7 @@
 #         playing = False
 
 # # Update the Screen With New Drawings
-#     pg.display.flip()
+#     pygame.display.flip()
 
 # # Limit to FPS
 #     clock.tick(FPS)
@@ -163,17 +163,17 @@
 # def draw_ship(x, y, body_width, body_height, win_width, win_height, top_col, bot_col):
    
 #     #Ship top
-#     pg.draw.ellipse(screen, top_col, [x + (body_width - win_width) // 2, y - win_height, win_width, win_height + 20])
+#     pygame.draw.ellipse(screen, top_col, [x + (body_width - win_width) // 2, y - win_height, win_width, win_height + 20])
 
 
 #     #Ship bot
-#     pg.draw.ellipse(screen, bot_col, [x, y, body_width, body_height])
+#     pygame.draw.ellipse(screen, bot_col, [x, y, body_width, body_height])
 
 # ##Buildings 
 # def drawBuilding(color, x1, y1, width, height, window_color, cols, rows):
 
 #     #Main
-#     pg.draw.rect(screen, color, [x1, y1, width, height])
+#     pygame.draw.rect(screen, color, [x1, y1, width, height])
 
 #     #Windows
 #     winx_offset = 35
@@ -184,7 +184,7 @@
 #     for row in range(rows):
 #         for col in range(cols):
 
-#             pg.draw.rect(screen, window_color, [x1 + winx_offset, y1 + winy_offset, width/4, width/4], )
+#             pygame.draw.rect(screen, window_color, [x1 + winx_offset, y1 + winy_offset, width/4, width/4], )
         
 #             winx_offset += 75
 
@@ -205,7 +205,7 @@
 
 #     for i in range(len(lasers)):
 #         for i in range(1):
-#             pg.draw.circle(screen, RED, lasers[0], 5)
+#             pygame.draw.circle(screen, RED, lasers[0], 5)
 
 #             lasers[0][1] += laser_speed
 
@@ -219,15 +219,15 @@
 
 # Game Setup
 # FPS = 60
-# pg.init()
-# pg.font.init()
+# pygame.init()
+# pygame.font.init()
 
-# screen = pg.display.set_mode([width, height])
-# clock = pg.time.Clock()
+# screen = pygame.display.set_mode([width, height])
+# clock = pygame.time.Clock()
 
 # playing = True
 
-# pg.mouse.set_visible(False)
+# pygame.mouse.set_visible(False)
 
 #########################################
 # when therers oclision you need to remove both objects from their specific lists 
