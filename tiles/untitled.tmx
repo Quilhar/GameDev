@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-down" width="10" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="13">
- <tileset firstgid="1" source="ocean.tsx"/>
+ <tileset firstgid="1" source="ocean_spritesheet.tsx"/>
  <tileset firstgid="65" source="enemy_spritesheet.tsx"/>
  <layer id="1" name="Tile Layer 1" width="10" height="15">
   <data encoding="csv">
