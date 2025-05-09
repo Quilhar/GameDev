@@ -86,7 +86,7 @@ class Game:
                         self.all_sprites.add(self.enemy)
 
         # Player
-        self.player = Player(self.screen, ((MAP_WIDTH // 2) - TILESIZE), ((MAP_HEIGHT // 2) + (6 * TILESIZE)), self.player_image, self)
+        self.player = Player(self.screen, ((MAP_WIDTH // 2) - TILESIZE), ((MAP_HEIGHT // 2) + (8 * TILESIZE)), self.player_image, self)
         self.all_sprites.add(self.player)
 
         # Bullets
@@ -106,7 +106,7 @@ class Game:
                 self.bullet_sprites.remove(bullet)
                 self.all_sprites.remove(bullet)
 
-        #Updating the highscore
+        # Updating the highscore
         if self.score > self.highscore:
             self.highscore = self.score
 
@@ -156,6 +156,7 @@ class Game:
         '''contains the main game loop'''
 
         self.playing = True
+        
         while self.playing:
             self.clock.tick(FPS)
             self.events()

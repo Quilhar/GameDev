@@ -75,7 +75,8 @@ class Player(pygame.sprite.Sprite):
 
         # If there is a collision end the game
         if enemy_collision:
-            self.game.running = False
+            self.game.playing = False
+    
 
         return self.game.playing
     
