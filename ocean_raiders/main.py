@@ -222,10 +222,18 @@ class Game:
         # Reset the score after losing
         self.scorecount = 0
 
+        # Calling the wait_for_key method
+        self.wait_for_key()
+        
+        # Stop the music
+        self.music.stop()
+
 
 
     def wait_for_key(self):
         '''wait for a key press'''
+
+        # Waiting for a key press to restart the game 
         self.waiting = True
 
         while self.waiting:
@@ -236,6 +244,8 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     self.waiting = False
                     self.playing = True
+                    self.music.play(-1)
+            
                 
                 
 
