@@ -28,6 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.scorecount = 0
 
     def get_keys(self):
+
+        # Set starting velocity to 0 to stop it from moving without keys pressed and stop it from moving diagonally
         self.vx, self.vy = 0, 0
         
         keys = pygame.key.get_pressed()
@@ -67,18 +69,19 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 0
         if self.rect.y > MAP_HEIGHT - self.rect.height:
             self.rect.y = MAP_HEIGHT - self.rect.height
+        
+        # Player Collision
+        self.collide_with_enemy()
 
     def collide_with_enemy(self):
 
         # Check for collision with enemies
         enemy_collision = pygame.sprite.spritecollide(self, self.game.enemy_sprites, False)
 
-        # If there is a collision end the game
+        # If there is a collision, end the game
         if enemy_collision:
             self.game.playing = False
-    
-
-        return self.game.playing
+            
     
 class Bullet(pygame.sprite.Sprite):
 
@@ -112,7 +115,10 @@ class Bullet(pygame.sprite.Sprite):
 
         # What happens when a bullet hits an enemy
         if hit:
+            self.game.explosion_sound.play()
+
             self.game.score += 100
+
             self.game.all_sprites.remove(self)
             self.game.bullet_sprites.remove(self)
 

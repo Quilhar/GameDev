@@ -16,6 +16,14 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
+        # Sound/Music
+        self.music = pygame.mixer.Sound('ocean_raiders/battle-mus.mp3')
+        self.music.set_volume(0.5)
+        self.music.play(-1)
+
+        self.explosion_sound = pygame.mixer.Sound('ocean_raiders/explosion01.ogg')
+        self.explosion_sound.set_volume(0.5)
+
         # Font
         font_path = 'ocean_raiders/ARCADE_I.TTF' # or wherever your font file is
         size = 18
@@ -123,6 +131,7 @@ class Game:
         scores_img = self.my_font.render(scores_txt, True, WHITE)
         self.screen.blit(scores_img, (30, 10))
 
+        # Updating the screen 
         pygame.display.flip()
 
     def events(self):
@@ -165,11 +174,70 @@ class Game:
 
     def show_start_screen(self):
         '''the screen to start the game'''
-        pass
+        
+        # Creating and blitting the title text
+        self.screen.fill(BLACK)
+        font = pygame.font.SysFont('Calibri', 50, True, False)
+        title_txt = 'Ocean Raiders'
+        title_img = font.render(title_txt, True, WHITE)
+        title_rect = title_img.get_rect()
+        title_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2)
+        self.screen.blit(title_img, title_rect)
+
+        # Creating and blitting the instructions text
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        instructions_txt = 'Press any key to start'
+        instructions_img = font.render(instructions_txt, True, WHITE)
+        instructions_rect = instructions_img.get_rect()
+        instructions_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2 + 50)
+        self.screen.blit(instructions_img, instructions_rect)
+    
+        pygame.display.flip()
+    
+        self.wait_for_key()
+        
 
     def game_over_screen(self):
         '''the game over screen'''
-        pass
+
+        # Creating and blitting game over text
+        self.screen.fill(BLACK)
+        font = pygame.font.SysFont('Calibri', 50, True, False)
+        game_over_txt = 'Game Over'
+        game_over_img = font.render(game_over_txt, True, WHITE)
+        game_over_rect = game_over_img.get_rect()
+        game_over_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2)
+        self.screen.blit(game_over_img, game_over_rect)
+
+        # Creating and blitting the instructions text
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        instructions_txt = 'Press any key to start'
+        instructions_img = font.render(instructions_txt, True, WHITE)
+        instructions_rect = instructions_img.get_rect()
+        instructions_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2 + 50)
+        self.screen.blit(instructions_img, instructions_rect)
+
+        pygame.display.flip()
+        
+        # Reset the score after losing
+        self.scorecount = 0
+
+
+
+    def wait_for_key(self):
+        '''wait for a key press'''
+        self.waiting = True
+
+        while self.waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.waiting = False
+                    self.running = False
+                if event.type == pygame.KEYDOWN:
+                    self.waiting = False
+                    self.playing = True
+                
+                
 
 ##########################################
 #### PLAY GAME ####
