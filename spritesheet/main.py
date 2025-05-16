@@ -281,7 +281,7 @@ class Game:
 
                     self.bullet = Bullet(self.screen, bulletx, bullety, self.bullet_image_list, self.player.dir, self)
                     self.bullet_sprites.add(self.bullet)
-                    self.all_sprites.add(self.bullet)
+                    self.all_sprites.add(self.bullet) 
 
 
                 
