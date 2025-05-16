@@ -203,7 +203,6 @@ class Game:
             self.enemy_bullet_sprites.add(self.enemy_bullet)
             self.all_sprites.add(self.enemy_bullet)
                 
-
         # Updating the highscore
         if self.score > self.highscore:
 
@@ -227,6 +226,8 @@ class Game:
             # Creating new enemies
             self.new()
 
+        # Cooldown for the bullet
+        self.cooldown -= self.clock.get_time() / 1000
 
     def draw(self):
         '''fill the screen, draw the objects, and flip'''
