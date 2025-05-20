@@ -55,14 +55,14 @@ class Player(pygame.sprite.Sprite):
             self.vy = 0
 
 
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.vy = -self.player_speed
-            self.vx = 0
+        # if keys[pygame.K_w] or keys[pygame.K_UP]:
+        #     self.vy = -self.player_speed
+        #     self.vx = 0
 
 
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.vy = self.player_speed
-            self.vx = 0
+        # if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+        #     self.vy = self.player_speed
+        #     self.vx = 0
 
 
     def update(self):
@@ -159,7 +159,6 @@ class Bullet(pygame.sprite.Sprite):
             self.game.all_sprites.remove(self)
             self.game.bullet_sprites.remove(self)
 
-
 class Enemy(pygame.sprite.Sprite):
 
     def __init__(self, screen, x, y, image, game):
@@ -178,6 +177,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y = y
 
 class Enemy_Bullet(pygame.sprite.Sprite):
+
+
     def __init__(self, screen, x, y, image, game):
 
 
@@ -217,3 +218,23 @@ class Enemy_Bullet(pygame.sprite.Sprite):
         if hit:
             self.game.game_over_sound.play()
             self.game.playing = False
+
+class SpriteSheet():
+    
+    def __init__(self, filename):
+        self.SpriteSheet = pygame.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height, scale_x = None, scale_y = None, color_key = None):
+
+        # Get the image at (x, y) on the spritesheet
+        image = pygame.Surface((width, height))
+        image.blit(self.SpriteSheet, (0, 0), (x, y, width, height))
+
+        if scale_x and scale_y:
+            image = pygame.transform.scale(image, (width * scale_x, height * scale_y))
+
+        if color_key:
+            color = BLACK
+            image.set_colorkey(color)
+
+        return image

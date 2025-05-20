@@ -33,7 +33,7 @@ class Game:
         self.font_path = 'ocean_raiders/ARCADE_I.TTF'
        
         # High score and score variables
-        self.highscore = 0
+        self.highscore = self.load_high_score()
         self.score = 0
 
         # Random variables for when I might need them
@@ -42,7 +42,7 @@ class Game:
 
         # Variables for enemy movement
         self.enemy_direction = 1  
-        self.enemy_speed = 5
+        self.enemy_speed = 3
         self.enemy_drop_distance = 15
 
         # Variables for the game
@@ -50,7 +50,7 @@ class Game:
 
         # Cooldown variables
         self.cooldown = 0
-        self.cooldown_time = 0.5
+        self.cooldown_time = 0.3
         
 
         # Loading images
@@ -64,11 +64,9 @@ class Game:
         # Map Images
         self.map = pytmx.load_pygame('/Users/244213/Desktop/GameDev/tiles/ocean_map.tmx')
 
-
         # Player Image
         self.player_image = pygame.image.load('ocean_raiders/player_ship.png')
         self.player_image = pygame.transform.scale(self.player_image, (TILESIZE, 64))
-
 
         # Bullet image
         self.bullet_image = pygame.image.load('ocean_raiders/bullet.png')
@@ -78,6 +76,8 @@ class Game:
         self.enemy_bullet_image = pygame.image.load('ocean_raiders/red_laser.png')
         self.enemy_bullet_image = pygame.transform.scale(self.enemy_bullet_image, (TILESIZE // 2, TILESIZE // 2))
         self.enemy_bullet_image = pygame.transform.rotate(self.enemy_bullet_image, 90)
+
+        # Powerup Images
 
 
     def new(self):
@@ -128,7 +128,7 @@ class Game:
 
 
         # Player
-        self.player = Player(self.screen, ((MAP_WIDTH // 2) - TILESIZE), ((MAP_HEIGHT // 2) + (8 * TILESIZE)), self.player_image, self)
+        self.player = Player(self.screen, ((MAP_WIDTH // 2) - TILESIZE), ((MAP_HEIGHT // 2) + (12 * TILESIZE)), self.player_image, self)
         self.all_sprites.add(self.player)
         self.player_sprite.add(self.player)
 
@@ -146,7 +146,7 @@ class Game:
         self.all_sprites.update()
 
 
-        # Making sure the bullets are removed when they leave the screen
+        # Making sure bullets are removed when they leave the screen
         for bullet in self.bullet_sprites:
             if bullet.rect.y <= 0 or bullet.rect.y >= MAP_HEIGHT or bullet.rect.x <= 0 or bullet.rect.x >= MAP_WIDTH:
                 self.bullet_sprites.remove(bullet)
@@ -207,6 +207,7 @@ class Game:
         if self.score > self.highscore:
 
             self.highscore = self.score
+            self.save_high_score(self.highscore)
 
         # What happens when all enemies are dead
         if len(self.enemy_sprites) == 0:
@@ -221,7 +222,7 @@ class Game:
             self.score += 1000
 
             # Changing enemy speed based on level
-            self.enemy_speed += 2
+            self.enemy_speed += .5
 
             # Creating new enemies
             self.new()
@@ -235,9 +236,9 @@ class Game:
 
         # Blitting all sprites
         for sprite in self.all_sprites:   
-
+ 
             self.screen.blit(sprite.image, sprite.rect)
-       
+
         # Score and high score font while playing the game
         playing_score_font = pygame.font.Font(self.font_path, 18)
 
@@ -249,7 +250,6 @@ class Game:
         highscore_txt = f'High Score:{self.highscore}'
         highscore_img = playing_score_font.render(highscore_txt, True, WHITE)
         self.screen.blit(highscore_img, (MAP_WIDTH - 325, 10))
-
 
         # Updating the screen
         pygame.display.flip()
@@ -363,8 +363,6 @@ class Game:
         highscore_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 150)
         self.screen.blit(highscore_img, highscore_rect)
 
-        
-
 
         # Creating and blitting the instructions text
         instructions_font = pygame.font.Font(self.font_path, 25)
@@ -384,7 +382,7 @@ class Game:
         self.music.stop()
 
         # Reset enemy stats and 
-        self.enemy_speed = 5
+        self.enemy_speed = 3
         self.enemy_direction = 1
         self.level_count = 0
 
@@ -413,7 +411,27 @@ class Game:
                     self.music.set_volume(0.5)
                     self.music.play(-1)
            
-               
+###########################################
+######### FUNCTIONS FOR HIGHSCORE #########
+###########################################
+
+    def load_high_score(self):
+        '''load the high score from the file'''
+        
+        # Try to open the high score file and read the high score, if there is no value in there yet or the file doesn't exist, just return a deafault value of 0
+        try:
+            with open('highscore.txt', 'r') as f:
+                return int(f.readline())
+        except (FileNotFoundError, ValueError):
+            return 0
+        
+    def save_high_score(self, high_score):
+        '''save the high score to the file'''
+        
+        # Open the high score file and write the high score to it
+
+        with open('highscore.txt', 'w') as f:
+            f.write(str(high_score))
 
 ##########################################
 ################ PLAY GAME ###############
@@ -432,3 +450,9 @@ while game.running:
 
 
 pygame.quit()
+
+
+
+
+
+
