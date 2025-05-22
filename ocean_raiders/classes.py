@@ -55,14 +55,14 @@ class Player(pygame.sprite.Sprite):
             self.vy = 0
 
 
-        # if keys[pygame.K_w] or keys[pygame.K_UP]:
-        #     self.vy = -self.player_speed
-        #     self.vx = 0
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            self.vy = -self.player_speed
+            self.vx = 0
 
 
-        # if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        #     self.vy = self.player_speed
-        #     self.vx = 0
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            self.vy = self.player_speed
+            self.vx = 0
 
 
     def update(self):
@@ -101,6 +101,24 @@ class Player(pygame.sprite.Sprite):
         if enemy_collision:
             self.game.game_over_sound.play()
             self.game.playing = False
+    
+    def power_up_collision(self):
+
+
+        # Check for collision with player
+        hit = pygame.sprite.spritecollide(self, self.game.powerup_sprites, False)
+
+
+        # What happens when a powerup hits the player
+        if hit:
+            self.game.powerup_sound.play()
+            self.game.all_sprites.remove(self)
+            self.game.powerup_sprites.remove(self)
+            self.active = True
+            print("Powerup activated")
+            
+            if self.image == self.game.powerup_images_list[0]:
+                self.game.player_speed += 100
            
    
 class Bullet(pygame.sprite.Sprite):
@@ -214,27 +232,39 @@ class Enemy_Bullet(pygame.sprite.Sprite):
         hit = pygame.sprite.spritecollide(self, self.game.player_sprite, False)
 
         # What happens when a bullet hits the player
-
         if hit:
             self.game.game_over_sound.play()
             self.game.playing = False
 
-class SpriteSheet():
-    
-    def __init__(self, filename):
-        self.SpriteSheet = pygame.image.load(filename).convert()
+class Powerup(pygame.sprite.Sprite):
 
-    def get_image(self, x, y, width, height, scale_x = None, scale_y = None, color_key = None):
 
-        # Get the image at (x, y) on the spritesheet
-        image = pygame.Surface((width, height))
-        image.blit(self.SpriteSheet, (0, 0), (x, y, width, height))
+    def __init__(self, screen, x, y, image, game):
 
-        if scale_x and scale_y:
-            image = pygame.transform.scale(image, (width * scale_x, height * scale_y))
 
-        if color_key:
-            color = BLACK
-            image.set_colorkey(color)
+        pygame.sprite.Sprite.__init__(self)
 
-        return image
+
+        # Miscellaneous Variables
+        self.game = game
+        self.image = image
+        self.display = screen
+
+
+        # Set the initial position of the powerup and creating rect
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.active = False
+
+
+                
+            
+                
+                
+
+
+
+
+ 

@@ -29,6 +29,9 @@ class Game:
         self.game_over_sound = pygame.mixer.Sound('ocean_raiders/GameOver.ogg')
         self.game_over_sound.set_volume(0.5)
 
+        self.powerup_sound = pygame.mixer.Sound('ocean_raiders/powerup.wav')
+        self.powerup_sound.set_volume(0.5)
+
         # Font
         self.font_path = 'ocean_raiders/ARCADE_I.TTF'
        
@@ -51,6 +54,9 @@ class Game:
         # Cooldown variables
         self.cooldown = 0
         self.cooldown_time = 0.3
+
+        # self.powerup_timer = 60
+        # self.powerup_cooldown = 90
         
 
         # Loading images
@@ -59,7 +65,6 @@ class Game:
 
     def load_images(self):
         '''load and/or get images'''
-
 
         # Map Images
         self.map = pytmx.load_pygame('/Users/244213/Desktop/GameDev/tiles/ocean_map.tmx')
@@ -78,7 +83,19 @@ class Game:
         self.enemy_bullet_image = pygame.transform.rotate(self.enemy_bullet_image, 90)
 
         # Powerup Images
+        self.powerup_images_list = []
 
+        # 2x Points Powerup
+        self.points_powerup_image = pygame.image.load('ocean_raiders/2x_points.png')
+        self.points_powerup_image = pygame.transform.scale(self.points_powerup_image, (TILESIZE, TILESIZE))
+        self.powerup_images_list.append(self.points_powerup_image)
+
+        # Lower CD Powerup
+        self.lower_cd_powerup_image = pygame.image.load('ocean_raiders/cd_powerup.png')
+        self.lower_cd_powerup_image = pygame.transform.scale(self.lower_cd_powerup_image, (TILESIZE, TILESIZE))
+        self.powerup_images_list.append(self.lower_cd_powerup_image)
+
+        
 
     def new(self):
         '''create all game objects, sprites, and groups"
@@ -92,6 +109,7 @@ class Game:
         self.enemy_sprites = pygame.sprite.Group()
         self.enemy_bullet_sprites = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
+        self.powerup_sprites = pygame.sprite.Group()
 
 
         # Finding Tiled Sprites
@@ -136,15 +154,20 @@ class Game:
         # Bullets
         self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image, self)
 
+        # Powerups 
+        self.powerup = Powerup(self.screen, self.randx, self.randy, random.choice(self.powerup_images_list), self)
+        self.powerup_sprites.add(self.powerup)
+        self.all_sprites.add(self.powerup)
+
         self.run()
 
+        
 
     def update(self):
         '''run all updates'''
 
         # Update all sprites
         self.all_sprites.update()
-
 
         # Making sure bullets are removed when they leave the screen
         for bullet in self.bullet_sprites:
@@ -229,6 +252,9 @@ class Game:
 
         # Cooldown for the bullet
         self.cooldown -= self.clock.get_time() / 1000
+
+        # Powerup cooldown
+         
 
     def draw(self):
         '''fill the screen, draw the objects, and flip'''
@@ -316,7 +342,6 @@ class Game:
         title_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.25)
         self.screen.blit(title_img, title_rect)
 
-
         # Creating and blitting the instructions text
         instructions_font = pygame.font.Font(self.font_path, 25)
         instructions_txt = 'PRESS ANY KEY TO START'
@@ -357,7 +382,7 @@ class Game:
         self.screen.blit(score_img, score_rect)
 
 
-        highscore_txt = f'YOUR HIGHSCORE IS: {self.highscore}!'
+        highscore_txt = f'YOUR HIGHSCORE IS: {self.highscore}'
         highscore_img = end_score_font.render(highscore_txt, True, WHITE)
         highscore_rect = highscore_img.get_rect()
         highscore_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 150)
