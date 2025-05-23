@@ -31,9 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-
-        self.scorecount = 0
-
+        
 
     def get_keys(self):
 
@@ -106,19 +104,20 @@ class Player(pygame.sprite.Sprite):
 
 
         # Check for collision with player
-        hit = pygame.sprite.spritecollide(self, self.game.powerup_sprites, False)
+        hit = pygame.sprite.spritecollide(self, self.game.powerup_sprites, True)
 
 
         # What happens when a powerup hits the player
         if hit:
             self.game.powerup_sound.play()
-            self.game.all_sprites.remove(self)
-            self.game.powerup_sprites.remove(self)
-            self.active = True
+            self.game.powerup_active = True
             print("Powerup activated")
             
-            if self.image == self.game.powerup_images_list[0]:
-                self.game.player_speed += 100
+            if self.game.powerup.image == self.game.powerup_images_list[0]:
+                while self.game.powerup_active:
+                    self.game.score_increment == 200
+            elif self.game.powerup.image == self.game.powerup_images_list[1]:
+                print('speed')
            
    
 class Bullet(pygame.sprite.Sprite):
@@ -171,7 +170,7 @@ class Bullet(pygame.sprite.Sprite):
             self.game.explosion_sound.play()
             
             # Increase the score
-            self.game.score += 100
+            self.game.score += self.game.score_increment
             
             # Remove the enemy and bullet from the game
             self.game.all_sprites.remove(self)

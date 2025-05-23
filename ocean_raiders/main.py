@@ -38,6 +38,7 @@ class Game:
         # High score and score variables
         self.highscore = self.load_high_score()
         self.score = 0
+        self.score_increment = 100
 
         # Random variables for when I might need them
         self.randx = random.randint(64, MAP_WIDTH-64)
@@ -55,12 +56,15 @@ class Game:
         self.cooldown = 0
         self.cooldown_time = 0.3
 
-        # self.powerup_timer = 60
-        # self.powerup_cooldown = 90
-        
+        self.powerup_timer = 20
+        self.powerup_cooldown = 00
+        self.powerup_active = False
 
         # Loading images
         self.load_images()
+
+
+        
 
 
     def load_images(self):
@@ -154,10 +158,11 @@ class Game:
         # Bullets
         self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image, self)
 
-        # Powerups 
-        self.powerup = Powerup(self.screen, self.randx, self.randy, random.choice(self.powerup_images_list), self)
-        self.powerup_sprites.add(self.powerup)
-        self.all_sprites.add(self.powerup)
+        # Powerups
+        if self.powerup_cooldown <= 0: 
+            self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), 500, random.choice(self.powerup_images_list), self)
+            self.powerup_sprites.add(self.powerup)
+            self.all_sprites.add(self.powerup)
 
         self.run()
 
@@ -252,8 +257,22 @@ class Game:
 
         # Cooldown for the bullet
         self.cooldown -= self.clock.get_time() / 1000
+        
+        
+        # Powerup 
+        self.player.power_up_collision() 
 
-        # Powerup cooldown
+        if self.powerup_active: 
+            self.powerup_timer -= self.clock.get_time() / 1000
+
+            # If the powerup timer runs out, reset the powerup
+            if self.powerup_timer <= 0:
+                self.powerup_active = False
+                self.powerup_timer = 20
+                self.powerup_cooldown = 0
+
+        self.powerup_cooldown -= self.clock.get_time() / 1000
+
          
 
     def draw(self):
