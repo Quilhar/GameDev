@@ -99,6 +99,7 @@ class Player(pygame.sprite.Sprite):
         if enemy_collision:
             self.game.game_over_sound.play()
             self.game.playing = False
+ 
     
     def power_up_collision(self):
 
@@ -113,11 +114,13 @@ class Player(pygame.sprite.Sprite):
             self.game.powerup_active = True
             print("Powerup activated")
             
-            if self.game.powerup.image == self.game.powerup_images_list[0]:
-                while self.game.powerup_active:
-                    self.game.score_increment == 200
-            elif self.game.powerup.image == self.game.powerup_images_list[1]:
-                print('speed')
+            if self.game.powerup.image == self.game.powerup_images_list[0] and self.game.powerup_active:
+
+                self.game.score_increment = 200
+
+            elif self.game.powerup.image == self.game.powerup_images_list[1] and self.game.powerup_active:
+
+                self.game.cooldown_time = 0
            
    
 class Bullet(pygame.sprite.Sprite):

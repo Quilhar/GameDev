@@ -46,25 +46,25 @@ class Game:
 
         # Variables for enemy movement
         self.enemy_direction = 1  
-        self.enemy_speed = 3
-        self.enemy_drop_distance = 15
+        self.enemy_speed = 1
+        self.enemy_drop_distance = 10
 
         # Variables for the game
         self.level_count = 0
 
-        # Cooldown variables
+        # Cooldown for shooting variables
         self.cooldown = 0
         self.cooldown_time = 0.3
 
-        self.powerup_timer = 20
-        self.powerup_cooldown = 00
+        # Powerup variables
+        self.powerup_timer = 10
+        self.powerup_cooldown = 40
         self.powerup_active = False
+        self.powerup_spawn = False
+        self.spawn_timer = 5
 
         # Loading images
         self.load_images()
-
-
-        
 
 
     def load_images(self):
@@ -158,11 +158,10 @@ class Game:
         # Bullets
         self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image, self)
 
-        # Powerups
-        if self.powerup_cooldown <= 0: 
-            self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), 500, random.choice(self.powerup_images_list), self)
-            self.powerup_sprites.add(self.powerup)
-            self.all_sprites.add(self.powerup)
+        # Powerups  
+        self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), random.randint((MAP_HEIGHT // 2), MAP_HEIGHT), random.choice(self.powerup_images_list), self)
+        # self.powerup_sprites.add(self.powerup)
+        # self.all_sprites.add(self.powerup)
 
         self.run()
 
@@ -173,7 +172,7 @@ class Game:
 
         # Update all sprites
         self.all_sprites.update()
-
+    
         # Making sure bullets are removed when they leave the screen
         for bullet in self.bullet_sprites:
             if bullet.rect.y <= 0 or bullet.rect.y >= MAP_HEIGHT or bullet.rect.x <= 0 or bullet.rect.x >= MAP_WIDTH:
@@ -210,6 +209,11 @@ class Game:
             for enemy in self.enemy_sprites:
 
                 enemy.rect.y += self.enemy_drop_distance
+        
+        # Incase the player somehow manages to dodge all the bullets and the enemy goes off screen
+        if self.enemy.rect.y >= MAP_HEIGHT:
+            self.game_over_sound.play()
+            self.playing = False
 
         ##########################################
 
@@ -230,12 +234,16 @@ class Game:
             self.enemy_bullet = Enemy_Bullet(self.screen, enemy_bulletx, enemy_bullety, self.enemy_bullet_image, self)
             self.enemy_bullet_sprites.add(self.enemy_bullet)
             self.all_sprites.add(self.enemy_bullet)
-                
+
+        ##########################################
+
         # Updating the highscore
         if self.score > self.highscore:
 
             self.highscore = self.score
             self.save_high_score(self.highscore)
+
+        ##########################################
 
         # What happens when all enemies are dead
         if len(self.enemy_sprites) == 0:
@@ -249,31 +257,63 @@ class Game:
             # Score bonus for clearing a level
             self.score += 1000
 
-            # Changing enemy speed based on level
+            # Changing enemy speed for clearing a level
             self.enemy_speed += .5
 
             # Creating new enemies
             self.new()
 
+        ##########################################
+
         # Cooldown for the bullet
         self.cooldown -= self.clock.get_time() / 1000
-        
-        
+
+        ##########################################
+
         # Powerup 
         self.player.power_up_collision() 
-
+    
+        # If the powerup is active, start a timer for its duration
         if self.powerup_active: 
+
             self.powerup_timer -= self.clock.get_time() / 1000
+
+            print(self.powerup_timer)
 
             # If the powerup timer runs out, reset the powerup
             if self.powerup_timer <= 0:
+
                 self.powerup_active = False
-                self.powerup_timer = 20
-                self.powerup_cooldown = 0
+                self.powerup_cooldown_active = True 
 
-        self.powerup_cooldown -= self.clock.get_time() / 1000
+                self.powerup_timer = 10  # Reset the timer for the next powerup
+                self.score_increment = 100  # Reset the score increment to the default value
+                self.cooldown_time = 0.3   # Reset the cooldown time to the default value
+                
+        # If the powerup is not active, start the cooldown for the next powerup and once that cooldown is over, the powerup will spawn
+        if self.powerup_active == False:
 
-         
+            self.powerup_cooldown -= self.clock.get_time() / 1000
+
+            print(self.powerup_cooldown)
+
+        if self.powerup_cooldown <= 0: 
+            self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), random.randint((MAP_HEIGHT // 2), MAP_HEIGHT), random.choice(self.powerup_images_list), self)
+            self.all_sprites.add(self.powerup)
+            self.powerup_sprites.add(self.powerup)
+            self.powerup_spawn = True
+            
+            self.powerup_cooldown = 40  # Reset the cooldown for the next powerup
+        
+        # If the powerup is spawned, start a timer for how long the powerup will stay on the screen before you have to pick it up 
+        if self.powerup_spawn:
+            self.spawn_timer -= self.clock.get_time() / 1000
+
+            if self.spawn_timer <= 0:
+                self.powerup_spawn = False
+                self.spawn_timer = 5
+                self.powerup_sprites.remove(self.powerup)
+                self.all_sprites.remove(self.powerup)
 
     def draw(self):
         '''fill the screen, draw the objects, and flip'''
@@ -425,10 +465,13 @@ class Game:
         # Stop the music
         self.music.stop()
 
-        # Reset enemy stats and 
-        self.enemy_speed = 3
+        # Reset some variables and stats
+        self.enemy_speed = 2
         self.enemy_direction = 1
         self.level_count = 0
+
+        self.powerup_timer = 0
+        self.powerup_cooldown = 40
 
         # Calling the wait_for_key method
         self.wait_for_key()
