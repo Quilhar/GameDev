@@ -58,7 +58,7 @@ class Game:
 
         # Powerup variables
         self.powerup_timer = 10
-        self.powerup_cooldown = 40
+        self.powerup_cooldown = 30
         self.powerup_active = False
         self.powerup_spawn = False
         self.spawn_timer = 5
@@ -97,9 +97,8 @@ class Game:
         # Lower CD Powerup
         self.lower_cd_powerup_image = pygame.image.load('ocean_raiders/cd_powerup.png')
         self.lower_cd_powerup_image = pygame.transform.scale(self.lower_cd_powerup_image, (TILESIZE, TILESIZE))
-        self.powerup_images_list.append(self.lower_cd_powerup_image)
+        self.powerup_images_list.append(self.lower_cd_powerup_image)    
 
-        
 
     def new(self):
         '''create all game objects, sprites, and groups"
@@ -165,7 +164,6 @@ class Game:
 
         self.run()
 
-        
 
     def update(self):
         '''run all updates'''
@@ -193,22 +191,24 @@ class Game:
         for enemy in self.enemy_sprites:
 
             enemy.rect.x += self.enemy_speed * self.enemy_direction
-
+            
             # Check if any enemy hits the edge and if so it will make move down true
             if enemy.rect.right >= MAP_WIDTH or enemy.rect.left <= 0:
 
                 move_down = True
 
         # If move down is true, then the enemies will move down and change direction
+        print(self.enemy_speed, self.enemy_direction)
         if move_down:
             
             # Change the direction of the enemies
             self.enemy_direction *= -1
-
+            
             # Move the enemies down
             for enemy in self.enemy_sprites:
-
+                
                 enemy.rect.y += self.enemy_drop_distance
+                
         
         # Incase the player somehow manages to dodge all the bullets and the enemy goes off screen
         if self.enemy.rect.y >= MAP_HEIGHT:
@@ -232,8 +232,8 @@ class Game:
 
             # Creating the enemy bullet
             self.enemy_bullet = Enemy_Bullet(self.screen, enemy_bulletx, enemy_bullety, self.enemy_bullet_image, self)
-            self.enemy_bullet_sprites.add(self.enemy_bullet)
-            self.all_sprites.add(self.enemy_bullet)
+            # self.enemy_bullet_sprites.add(self.enemy_bullet)
+            # self.all_sprites.add(self.enemy_bullet)
 
         ##########################################
 
@@ -258,7 +258,7 @@ class Game:
             self.score += 1000
 
             # Changing enemy speed for clearing a level
-            self.enemy_speed += .5
+            self.enemy_speed += 1
 
             # Creating new enemies
             self.new()
@@ -278,24 +278,20 @@ class Game:
 
             self.powerup_timer -= self.clock.get_time() / 1000
 
-            print(self.powerup_timer)
-
             # If the powerup timer runs out, reset the powerup
             if self.powerup_timer <= 0:
 
                 self.powerup_active = False
                 self.powerup_cooldown_active = True 
 
-                self.powerup_timer = 10  # Reset the timer for the next powerup
+                self.powerup_timer = 15  # Reset the timer for the next powerup
                 self.score_increment = 100  # Reset the score increment to the default value
-                self.cooldown_time = 0.3   # Reset the cooldown time to the default value
+                self.cooldown_time = 0.3   # Reset the cooldown time to the default value 
                 
         # If the powerup is not active, start the cooldown for the next powerup and once that cooldown is over, the powerup will spawn
         if self.powerup_active == False:
 
             self.powerup_cooldown -= self.clock.get_time() / 1000
-
-            print(self.powerup_cooldown)
 
         if self.powerup_cooldown <= 0: 
             self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), random.randint((MAP_HEIGHT // 2), MAP_HEIGHT), random.choice(self.powerup_images_list), self)
@@ -303,7 +299,7 @@ class Game:
             self.powerup_sprites.add(self.powerup)
             self.powerup_spawn = True
             
-            self.powerup_cooldown = 40  # Reset the cooldown for the next powerup
+            self.powerup_cooldown = 40 # Reset the cooldown for the next powerup
         
         # If the powerup is spawned, start a timer for how long the powerup will stay on the screen before you have to pick it up 
         if self.powerup_spawn:
@@ -373,8 +369,6 @@ class Game:
                     self.all_sprites.add(self.bullet)
 
 
-
-
     def run(self):
         '''contains the main game loop'''
 
@@ -415,7 +409,6 @@ class Game:
         # Calling the wait_for_key method
         self.wait_for_key()
        
-
 
     def game_over_screen(self):
         '''the game over screen'''
@@ -466,8 +459,8 @@ class Game:
         self.music.stop()
 
         # Reset some variables and stats
-        self.enemy_speed = 2
-        self.enemy_direction = 1
+        self.enemy_speed = 1
+        self.enemy_direction = 1 
         self.level_count = 0
 
         self.powerup_timer = 0
@@ -512,6 +505,7 @@ class Game:
         except (FileNotFoundError, ValueError):
             return 0
         
+
     def save_high_score(self, high_score):
         '''save the high score to the file'''
         
