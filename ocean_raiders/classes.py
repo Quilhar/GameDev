@@ -1,16 +1,12 @@
 import pygame
 from settings import *
-import random
-
 
 class Player(pygame.sprite.Sprite):
 
 
     def __init__(self, screen, x, y, image, game):
 
-
         pygame.sprite.Sprite.__init__(self)
-
 
         # Miscellaneous Variables
         self.game = game
@@ -34,7 +30,6 @@ class Player(pygame.sprite.Sprite):
         
 
     def get_keys(self):
-
 
         # Set starting velocity to 0 to stop it from moving without keys pressed and stop it from moving diagonally
         self.vx, self.vy = 0, 0
@@ -90,7 +85,6 @@ class Player(pygame.sprite.Sprite):
 
     def collide_with_enemy(self):
 
-
         # Check for collision with enemies
         enemy_collision = pygame.sprite.spritecollide(self, self.game.enemy_sprites, False)
 
@@ -102,7 +96,6 @@ class Player(pygame.sprite.Sprite):
  
     
     def power_up_collision(self):
-
 
         # Check for collision with player
         hit = pygame.sprite.spritecollide(self, self.game.powerup_sprites, True)
@@ -121,13 +114,16 @@ class Player(pygame.sprite.Sprite):
             elif self.game.powerup.image == self.game.powerup_images_list[1] and self.game.powerup_active:
 
                 self.game.cooldown_time = 0
+
+            elif self.game.powerup.image == self.game.powerup_images_list[2] and self.game.powerup_active:
+
+                self.game.enemy_speed = 0
            
    
 class Bullet(pygame.sprite.Sprite):
 
 
     def __init__(self, screen, x, y, image, game):
-
 
         pygame.sprite.Sprite.__init__(self)
 
@@ -161,17 +157,16 @@ class Bullet(pygame.sprite.Sprite):
    
     def bullet_collision(self):
 
-
         # Check for collision with enemies
         hit = pygame.sprite.spritecollide(self, self.game.enemy_sprites, True)
-
 
         # What happens when a bullet hits an enemy
         if hit:
 
-            # Play explosion sound
+            # Play explosion
             self.game.explosion_sound.play()
-            
+            explosion = Explosion(self.display, self.game.enemy.rect.x, self.game.enemy.rect.y, self.game)
+            self.game.all_sprites.add(explosion)
             # Increase the score
             self.game.score += self.game.score_increment
             
@@ -261,12 +256,74 @@ class Powerup(pygame.sprite.Sprite):
         self.active = False
 
 
-                
-            
-                
-                
+class SpriteSheet():
+    
+    def __init__(self, filename):
+        self.SpriteSheet = pygame.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height, scale_x = None, scale_y = None, color_key = None):
+
+        #Get the image at (x, y) on the spritesheet
+        image = pygame.Surface((width, height))
+        image.blit(self.SpriteSheet, (0, 0), (x, y, width, height))
+
+        if scale_x and scale_y:
+            image = pygame.transform.scale(image, (width * scale_x, height * scale_y))
+
+        if color_key:
+            color = BLACK
+            image.set_colorkey(color)
+
+        return image
 
 
+class Explosion(pygame.sprite.Sprite):
 
+    def __init__(self, screen, x, y, game):
+
+        pygame.sprite.Sprite.__init__(self)
+
+        # Miscellaneous Variables
+        self.game = game
+        self.display = screen
+
+        # Explosion Spritesheet
+        explosion_sheet = SpriteSheet('spritesheet/explosion.png')
+        self.explosion_list = []
+
+        # Load the explosion images from the spritesheet
+        for y in range(5):
+            for x in range(5):
+                locx = 64 * x
+                locy = 64 * y 
+
+                explosion_image = explosion_sheet.get_image(locx, locy, 64, 64)
+
+                explosion_image.set_colorkey(BLACK)
+
+                self.explosion_list.append(explosion_image)
+
+        # Set the initial position of the explosion and creating rect
+        self.index = 0
+        self.image = self.explosion_list[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    
+        self.counter = 0
+
+    def update(self):
+        explosion_speed = .2
+        #update explosion animation
+        self.counter += 1
+
+        if self.counter >= explosion_speed and self.index < len(self.explosion_list) - 1:
+            self.counter = 0
+            self.index += 1
+            self.image = self.explosion_list[self.index]
+
+        #if the animation is complete, reset animation index
+        if self.index >= len(self.explosion_list) - 1 and self.counter >= explosion_speed:
+            self.kill()
 
  

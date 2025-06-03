@@ -46,8 +46,8 @@ class Game:
 
         # Variables for enemy movement
         self.enemy_direction = 1  
-        self.enemy_speed = 1
-        self.enemy_drop_distance = 10
+        self.enemy_speed = 2
+        self.enemy_drop_distance = 15
 
         # Variables for the game
         self.level_count = 0
@@ -58,7 +58,7 @@ class Game:
 
         # Powerup variables
         self.powerup_timer = 10
-        self.powerup_cooldown = 30
+        self.powerup_cooldown = 1
         self.powerup_active = False
         self.powerup_spawn = False
         self.spawn_timer = 5
@@ -99,11 +99,16 @@ class Game:
         self.lower_cd_powerup_image = pygame.transform.scale(self.lower_cd_powerup_image, (TILESIZE, TILESIZE))
         self.powerup_images_list.append(self.lower_cd_powerup_image)    
 
+        # Freezing Powerup
+        self.freeze_powerup_image = pygame.image.load('ocean_raiders/freeze_powerup.png')
+        self.freeze_powerup_image = pygame.transform.scale(self.freeze_powerup_image, (TILESIZE, TILESIZE))
+        self.freeze_powerup_image.set_colorkey(WHITE)
+        self.powerup_images_list.append(self.freeze_powerup_image)
+
 
     def new(self):
         '''create all game objects, sprites, and groups"
         call run() method'''
-
 
         # Sprite Groups
         self.all_sprites = pygame.sprite.Group()
@@ -114,7 +119,6 @@ class Game:
         self.player_sprite = pygame.sprite.Group()
         self.powerup_sprites = pygame.sprite.Group()
 
-
         # Finding Tiled Sprites
         for layer in self.map.visible_layers:
        
@@ -123,7 +127,7 @@ class Game:
             tile_size = min(tile_width, tile_height)
 
 
-            # Map Tiles
+            # Map Tilesß
             if isinstance(layer, pytmx.TiledTileLayer):
 
 
@@ -147,20 +151,16 @@ class Game:
                         self.enemy_sprites.add(self.enemy)
                         self.all_sprites.add(self.enemy)
 
-
         # Player
         self.player = Player(self.screen, ((MAP_WIDTH // 2) - TILESIZE), ((MAP_HEIGHT // 2) + (12 * TILESIZE)), self.player_image, self)
         self.all_sprites.add(self.player)
         self.player_sprite.add(self.player)
 
-
-        # Bullets
+        # Bullet
         self.bullet = Bullet(self.screen, self.randx, self.randy, self.bullet_image, self)
 
         # Powerups  
         self.powerup = Powerup(self.screen, (MAP_WIDTH // 2), random.randint((MAP_HEIGHT // 2), MAP_HEIGHT), random.choice(self.powerup_images_list), self)
-        # self.powerup_sprites.add(self.powerup)
-        # self.all_sprites.add(self.powerup)
 
         self.run()
 
@@ -198,7 +198,7 @@ class Game:
                 move_down = True
 
         # If move down is true, then the enemies will move down and change direction
-        print(self.enemy_speed, self.enemy_direction)
+        
         if move_down:
             
             # Change the direction of the enemies
@@ -211,9 +211,10 @@ class Game:
                 
         
         # Incase the player somehow manages to dodge all the bullets and the enemy goes off screen
-        if self.enemy.rect.y >= MAP_HEIGHT:
-            self.game_over_sound.play()
-            self.playing = False
+        for enemy in self.enemy_sprites:
+            if enemy.rect.y >= MAP_HEIGHT:
+                self.game_over_sound.play()
+                self.playing = False
 
         ##########################################
 
@@ -232,8 +233,8 @@ class Game:
 
             # Creating the enemy bullet
             self.enemy_bullet = Enemy_Bullet(self.screen, enemy_bulletx, enemy_bullety, self.enemy_bullet_image, self)
-            # self.enemy_bullet_sprites.add(self.enemy_bullet)
-            # self.all_sprites.add(self.enemy_bullet)
+            self.enemy_bullet_sprites.add(self.enemy_bullet)
+            self.all_sprites.add(self.enemy_bullet)
 
         ##########################################
 
@@ -287,6 +288,7 @@ class Game:
                 self.powerup_timer = 15  # Reset the timer for the next powerup
                 self.score_increment = 100  # Reset the score increment to the default value
                 self.cooldown_time = 0.3   # Reset the cooldown time to the default value 
+                self.enemy_speed = self.level_count + 2 # Unfreeze the enemies
                 
         # If the powerup is not active, start the cooldown for the next powerup and once that cooldown is over, the powerup will spawn
         if self.powerup_active == False:
@@ -314,11 +316,8 @@ class Game:
     def draw(self):
         '''fill the screen, draw the objects, and flip'''
 
-
-        # Blitting all sprites
-        for sprite in self.all_sprites:   
- 
-            self.screen.blit(sprite.image, sprite.rect)
+        # Drawing all the sprites
+        self.all_sprites.draw(self.screen)
 
         # Score and high score font while playing the game
         playing_score_font = pygame.font.Font(self.font_path, 18)
@@ -331,6 +330,13 @@ class Game:
         highscore_txt = f'High Score:{self.highscore}'
         highscore_img = playing_score_font.render(highscore_txt, True, WHITE)
         self.screen.blit(highscore_img, (MAP_WIDTH - 325, 10))
+
+        # Powerup timer text
+        if self.powerup_active:
+            powerup_timer_font = pygame.font.Font(self.font_path, 18)
+            powerup_timer_txt = f'Powerup Timer: {int(self.powerup_timer)}'
+            powerup_timer_img = powerup_timer_font.render(powerup_timer_txt, True, WHITE)
+            self.screen.blit(powerup_timer_img, (MAP_WIDTH // 2 - 125 , 40))
 
         # Updating the screen
         pygame.display.flip()
@@ -392,16 +398,30 @@ class Game:
         title_txt = 'OCEAN RAIDERS'
         title_img = title_font.render(title_txt, True, WHITE)
         title_rect = title_img.get_rect()
-        title_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.25)
+        title_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5)
         self.screen.blit(title_img, title_rect)
 
         # Creating and blitting the instructions text
-        instructions_font = pygame.font.Font(self.font_path, 25)
-        instructions_txt = 'PRESS ANY KEY TO START'
+        instructions_font = pygame.font.Font(self.font_path, 20)
+        instructions_txt = 'USE WASD OR ARROW KEYS TO MOVE'
         instructions_img = instructions_font.render(instructions_txt, True, WHITE)
         instructions_rect = instructions_img.get_rect()
-        instructions_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.25 + 75)
+        instructions_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5 + 100)
         self.screen.blit(instructions_img, instructions_rect)
+
+        instructions2_txt = 'PRESS SPACE TO SHOOT'  
+        instructions2_img = instructions_font.render(instructions2_txt, True, WHITE)
+        instructions2_rect = instructions2_img.get_rect()
+        instructions2_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5 + 135)
+        self.screen.blit(instructions2_img, instructions2_rect)
+
+        # Creating and blitting the start text
+        start_font = pygame.font.Font(self.font_path, 20)
+        start_txt = 'PRESS ANY KEY TO START'
+        start_img = start_font.render(start_txt, True, WHITE)
+        start_rect = start_img.get_rect()
+        start_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5 + 225)
+        self.screen.blit(start_img, start_rect)
 
         # Updating the screen
         pygame.display.flip()
@@ -415,39 +435,39 @@ class Game:
 
         # Creating and blitting game over text
         self.screen.fill(BLACK)
-        font = pygame.font.Font(self.font_path, 50)
+        font = pygame.font.Font(self.font_path, 40)
         game_over_txt = 'GAME OVER'
         game_over_img = font.render(game_over_txt, True, WHITE)
         game_over_rect = game_over_img.get_rect()
-        game_over_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3)
+        game_over_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5)
         self.screen.blit(game_over_img, game_over_rect)
 
 
         # Creating and blitting the high score and score text
-        end_score_font = pygame.font.Font(self.font_path, 25)
+        end_score_font = pygame.font.Font(self.font_path, 20)
 
 
         score_txt = f'YOUR SCORE WAS: {self.score}'
         score_img = end_score_font.render(score_txt, True, WHITE)
         score_rect = score_img.get_rect()
-        score_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 100)
+        score_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5 + 100)
         self.screen.blit(score_img, score_rect)
 
 
         highscore_txt = f'YOUR HIGHSCORE IS: {self.highscore}'
         highscore_img = end_score_font.render(highscore_txt, True, WHITE)
         highscore_rect = highscore_img.get_rect()
-        highscore_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 150)
+        highscore_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2.5 + 150)
         self.screen.blit(highscore_img, highscore_rect)
 
 
-        # Creating and blitting the instructions text
-        instructions_font = pygame.font.Font(self.font_path, 25)
-        instructions_txt = 'PRESS ANY KEY TO RESTART'
-        instructions_img = instructions_font.render(instructions_txt, True, WHITE)
-        instructions_rect = instructions_img.get_rect()
-        instructions_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 300)
-        self.screen.blit(instructions_img, instructions_rect)
+        # Creating and blitting the start text
+        start_font = pygame.font.Font(self.font_path, 20)
+        start_txt = 'PRESS ANY KEY TO RESTART'
+        start_img = start_font.render(start_txt, True, WHITE)
+        start_rect = start_img.get_rect()
+        start_rect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 3 + 300)
+        self.screen.blit(start_img, start_rect)
 
         # Updating the screen
         pygame.display.flip()
@@ -459,7 +479,7 @@ class Game:
         self.music.stop()
 
         # Reset some variables and stats
-        self.enemy_speed = 1
+        self.enemy_speed = 2
         self.enemy_direction = 1 
         self.level_count = 0
 
@@ -514,10 +534,10 @@ class Game:
         with open('highscore.txt', 'w') as f:
             f.write(str(high_score))
 
+
 ##########################################
 ################ PLAY GAME ###############
 ##########################################
-
 
 game = Game()
 
