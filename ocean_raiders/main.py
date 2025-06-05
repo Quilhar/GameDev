@@ -58,7 +58,7 @@ class Game:
 
         # Powerup variables
         self.powerup_timer = 10
-        self.powerup_cooldown = 1
+        self.powerup_cooldown = 30
         self.powerup_active = False
         self.powerup_spawn = False
         self.spawn_timer = 5
@@ -118,6 +118,7 @@ class Game:
         self.enemy_bullet_sprites = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
         self.powerup_sprites = pygame.sprite.Group()
+        self.explosion_sprites = pygame.sprite.Group()
 
         # Finding Tiled Sprites
         for layer in self.map.visible_layers:
@@ -285,7 +286,7 @@ class Game:
                 self.powerup_active = False
                 self.powerup_cooldown_active = True 
 
-                self.powerup_timer = 15  # Reset the timer for the next powerup
+                self.powerup_timer = 10  # Reset the timer for the next powerup
                 self.score_increment = 100  # Reset the score increment to the default value
                 self.cooldown_time = 0.3   # Reset the cooldown time to the default value 
                 self.enemy_speed = self.level_count + 2 # Unfreeze the enemies
@@ -301,7 +302,7 @@ class Game:
             self.powerup_sprites.add(self.powerup)
             self.powerup_spawn = True
             
-            self.powerup_cooldown = 40 # Reset the cooldown for the next powerup
+            self.powerup_cooldown = 30 # Reset the cooldown for the next powerup
         
         # If the powerup is spawned, start a timer for how long the powerup will stay on the screen before you have to pick it up 
         if self.powerup_spawn:
@@ -484,7 +485,7 @@ class Game:
         self.level_count = 0
 
         self.powerup_timer = 0
-        self.powerup_cooldown = 40
+        self.powerup_cooldown = 30
 
         # Calling the wait_for_key method
         self.wait_for_key()

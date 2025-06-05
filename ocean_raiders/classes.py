@@ -74,8 +74,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = 0
         if self.rect.x > MAP_WIDTH - self.rect.width:
             self.rect.x = MAP_WIDTH - self.rect.width
-        if self.rect.y < 0:
-            self.rect.y = 0
+        if self.rect.y < self.game.enemy.rect.y:
+            self.rect.y = self.game.enemy.rect.y
         if self.rect.y > MAP_HEIGHT - self.rect.height:
             self.rect.y = MAP_HEIGHT - self.rect.height
        
@@ -105,7 +105,6 @@ class Player(pygame.sprite.Sprite):
         if hit:
             self.game.powerup_sound.play()
             self.game.powerup_active = True
-            print("Powerup activated")
             
             if self.game.powerup.image == self.game.powerup_images_list[0] and self.game.powerup_active:
 
@@ -163,10 +162,16 @@ class Bullet(pygame.sprite.Sprite):
         # What happens when a bullet hits an enemy
         if hit:
 
-            # Play explosion
+            # Play explosion sound
             self.game.explosion_sound.play()
+
+            # Create an explosion at the enemy's position
             explosion = Explosion(self.display, self.game.enemy.rect.x, self.game.enemy.rect.y, self.game)
             self.game.all_sprites.add(explosion)
+            self.game.explosion_sprites.add(explosion)
+
+            print(self.game.enemy.rect.x, self.game.enemy.rect.y)
+
             # Increase the score
             self.game.score += self.game.score_increment
             
@@ -313,7 +318,9 @@ class Explosion(pygame.sprite.Sprite):
         self.counter = 0
 
     def update(self):
+
         explosion_speed = .2
+
         #update explosion animation
         self.counter += 1
 
