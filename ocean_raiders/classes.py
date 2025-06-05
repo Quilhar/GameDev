@@ -165,13 +165,15 @@ class Bullet(pygame.sprite.Sprite):
             # Play explosion sound
             self.game.explosion_sound.play()
 
-            # Create an explosion at the enemy's position   
-            self.explosion = Explosion(self.display, self.game.enemy.rect.x, self.game.enemy.rect.y, self.game)
-            self.game.all_sprites.add(self.explosion)
-            self.game.explosion_sprites.add(self.explosion)
-            
+            # Create an explosion at the enemy's position 
+            for enemy in hit:  
+                self.explosion = Explosion(self.display, enemy.rect.x, enemy.rect.y, self.game)
+                self.game.all_sprites.add(self.explosion)
+                self.game.explosion_sprites.add(self.explosion)
+                print(enemy.rect.x, enemy.rect.y)
+                print(self.explosion.rect.x, self.explosion.rect.y)
             print(self.game.enemy.rect.x, self.game.enemy.rect.y)
-            print(self.explosion.rect.x, self.explosion.rect.y)
+            
 
             # Increase the score
             self.game.score += self.game.score_increment
@@ -325,6 +327,7 @@ class Explosion(pygame.sprite.Sprite):
         #update explosion animation
         self.counter += 1
 
+        # if the counter reaches the explosion speed, update the index and image
         if self.counter >= explosion_speed and self.index < len(self.explosion_list) - 1:
             self.counter = 0
             self.index += 1
