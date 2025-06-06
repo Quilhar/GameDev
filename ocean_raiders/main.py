@@ -290,6 +290,7 @@ class Game:
                 self.score_increment = 100  # Reset the score increment to the default value
                 self.cooldown_time = 0.3   # Reset the cooldown time to the default value 
                 self.enemy_speed = self.level_count + 2 # Unfreeze the enemies
+                self.enemy_drop_distance = 15
                 
         # If the powerup is not active, start the cooldown for the next powerup and once that cooldown is over, the powerup will spawn
         if self.powerup_active == False:
@@ -319,7 +320,8 @@ class Game:
 
         # Drawing all the sprites
         self.all_sprites.draw(self.screen)
-
+        
+        
         # Score and high score font while playing the game
         playing_score_font = pygame.font.Font(self.font_path, 18)
 
