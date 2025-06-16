@@ -58,7 +58,7 @@ class Game:
 
         # Powerup variables
         self.powerup_timer = 10
-        self.powerup_cooldown = 30
+        self.powerup_cooldown = 25
         self.powerup_active = False
         self.powerup_spawn = False
         self.spawn_timer = 5
@@ -303,7 +303,7 @@ class Game:
             self.powerup_sprites.add(self.powerup)
             self.powerup_spawn = True
             
-            self.powerup_cooldown = 30 # Reset the cooldown for the next powerup
+            self.powerup_cooldown = 25 # Reset the cooldown for the next powerup
         
         # If the powerup is spawned, start a timer for how long the powerup will stay on the screen before you have to pick it up 
         if self.powerup_spawn:
@@ -486,8 +486,8 @@ class Game:
         self.enemy_direction = 1 
         self.level_count = 0
 
-        self.powerup_timer = 0
-        self.powerup_cooldown = 30
+        self.powerup_timer = 10
+        self.powerup_cooldown = 25
 
         # Calling the wait_for_key method
         self.wait_for_key()

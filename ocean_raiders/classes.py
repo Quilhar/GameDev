@@ -93,6 +93,8 @@ class Player(pygame.sprite.Sprite):
         if enemy_collision:
             self.game.game_over_sound.play()
             self.game.playing = False
+            self.game.powerup_active = False
+            self.game.powerup_timer = 0
  
     
     def power_up_collision(self):
